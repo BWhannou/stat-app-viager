@@ -3,28 +3,28 @@
 le modèle choisit est: lambda(d,x,t)=(t+d)*d*exp(x*beta+alpha)
 # les librairies
 
-library(stats4)  // mle
-library(pracma)  // fsolve
+	library(stats4)  // mle
+	library(pracma)  // fsolve
 
 # Initialisation:
 
-alpha, beta, t_end,
-nombre d'itération total de l'expérience=10000, nombre d'individu retenu par expérience=500,
-nombre d'individu rejeté par expérience=rep(0,nombre d'itération total de l'expérience), 
+	alpha, beta, t_end,
+	nombre d'itération total de l'expérience=10000, nombre d'individu retenu par expérience=500,
+	nombre d'individu rejeté par expérience=rep(0,nombre d'itération total de l'expérience), 
 
 
 
-borne de la date de contrat: inf=5000, sup=20000
+	borne de la date de contrat: inf=5000, sup=20000
 
-init=c(1,1.1,3)  // initialiseur de la fonction mle
+	init=c(1,1.1,3)  // initialiseur de la fonction mle
 
 # Definition de la log_likelihood
 
-log_like=function (alpha,beta,resi_, carac, contrat_)
-{
-	...
-	return
-}
+	log_like=function (alpha,beta,resi_, carac, contrat_)
+	{
+		...
+		return
+	}
 
 
 # Boucle for 
