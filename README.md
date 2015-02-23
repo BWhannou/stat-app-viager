@@ -29,10 +29,10 @@ le modèle choisit est: lambda(d,x,t)=(t+d)*d*exp(x*beta+alpha)
 
 # Boucle for 
 
-	for (boucle1=0; boucle1<=nombre d'itération total de l'expérience;boucle1++)
-	{
+		for (boucle1=0; boucle1<=nombre d'itération total de l'expérience;boucle1++)
+		{
 			resi=c(0,nombre d'individu retenu par expérience)
-			caracteristique= matrice à 2 colonnes et le nombre de lignes est égale au nombre d'individu retenu par 	experience
+			caracteristique= matrice à 2 colonnes et le nombre de lignes est égale au nombre d'individu retenu par experience
 			contrat=c(0,nombre d'individu retenu par expérience)
 			# définition de la fonction inverse
 			invFdr=function(u,x,t)
@@ -50,21 +50,21 @@ le modèle choisit est: lambda(d,x,t)=(t+d)*d*exp(x*beta+alpha)
 				x[2]=sample(1:2,1,0.5)      // c'est le sexe
 			
 				# simulation de la durée du contrat
-				t=runif(1,inf,sup)          // simulation suivant une loi uniforme. On pourra toujours 			modifier
+				t=runif(1,inf,sup)          // simulation suivant une loi uniforme. On pourra toujours 		modifier
 				u=runif(n_tirage,10^-10,(1-10^-7))
 				d=invFdr(u,x,t)
 				
 				# le cas de la censure
 				if (t+d<= t_end)            // condition d'acceptation
 				{
-					resi[boucle2]=d						// quand on accepte on 			incrémente le compteur
+					resi[boucle2]=d						// quand on accepte on 		incrémente le compteur
 					contrat[boucle2]=t
 					caracteristique[boucle2,]=x
 					boucle2=boucle2+1
 				}
 				else
 				{
-					nombre d'individu rejeté par experience[boucle1]++   // on incrémente à la position 		boucle1
+					nombre d'individu rejeté par experience[boucle1]++   // on incrémente à la position 	boucle1
 				}
 			}
 		
@@ -77,7 +77,12 @@ le modèle choisit est: lambda(d,x,t)=(t+d)*d*exp(x*beta+alpha)
 			}
 		
 			papa=mle(Vminuslike,start=list(alpha=init[1],beta1=init[2],beta2=init[3]),method="BFGS")
-	
-		
-		
+			
+			estimle[boucle1,1]=papa@coef[[1]]
+			estimle[boucle1,2]=papa@coef[[2]]
+			estimle[boucle1,3]=papa@coef[[3]]
+		}
+		alphaestim=mean(estimle[,1])
+		beta1estim=mean(estimle[,2])
+		beta2estim=mean(estimle[,3])
 			#
