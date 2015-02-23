@@ -29,7 +29,7 @@ le modèle choisit est: lambda(d,x,t)=(t+d)*d*exp(x*beta+alpha)
 
 # Boucle for 
 
-		for (boucle1=0; boucle1<=nombre d'itération total de l'expérience;boucle1++)
+		for (boucle1=1; boucle1<=nombre d'itération total de l'expérience)
 		{
 			resi=c(0,nombre d'individu retenu par expérience)
 			caracteristique= matrice à 2 colonnes et le nombre de lignes est égale au nombre d'individu retenu par experience
@@ -41,7 +41,7 @@ le modèle choisit est: lambda(d,x,t)=(t+d)*d*exp(x*beta+alpha)
 				return d
 			}
 			# boucle while
-			
+			boucle=2
 			while (boucle2<=nombre d'individu retenu par expérience)
 			{
 				# simulation du vecteur x
@@ -81,6 +81,7 @@ le modèle choisit est: lambda(d,x,t)=(t+d)*d*exp(x*beta+alpha)
 			estimle[boucle1,1]=papa@coef[[1]]
 			estimle[boucle1,2]=papa@coef[[2]]
 			estimle[boucle1,3]=papa@coef[[3]]
+			boucle1=boucle1+1
 		}
 		alphaestim=mean(estimle[,1])
 		beta1estim=mean(estimle[,2])
