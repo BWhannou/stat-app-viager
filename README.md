@@ -8,13 +8,15 @@ le modèle choisit est: lambda(d,x,t)=(t+d)*d*exp(x*beta+alpha)
 
 # Initialisation:
 on initialise toutes les constantes du programme: les paramètres, la fenêtre d'observation, le nombre d'individu... 
-	alpha, beta, t_end,
-	nombre d'itération total de l'expérience=10000, nombre d'individu retenu par expérience=500,
-	nombre d'individu rejeté par expérience=rep(0,nombre d'itération total de l'expérience), 
 
-	borne de la date de contrat: inf=5000, sup=20000
 
-	init=c(1,1.1,3)  // initialiseur de la fonction mle
+		alpha, beta, t_end,
+		nombre d'itération total de l'expérience=10000, nombre d'individu retenu par expérience=500,
+		nombre d'individu rejeté par expérience=rep(0,nombre d'itération total de l'expérience), 
+
+		borne de la date de contrat: inf=5000, sup=20000
+
+		init=c(1,1.1,3)  // initialiseur de la fonction mle
 
 # Definition de la log_likelihood
 
