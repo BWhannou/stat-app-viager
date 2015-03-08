@@ -8,8 +8,32 @@
    inf=5000   #borne de la date de contrat: 
    sup=20000
 
-    init=c(1,1,1)  # initialiseur de la fonction mle
+    init=c(4.65,0.1,1.2) *(10^(-2)) # initialiseur de la fonction mle
 	x0=1.2    #initialisation de fsolve
+
+resou= function (f)   # trouver le zero d'une fonction croissante
+{
+	a=0
+	b=15000
+while((abs(a-b))>(10^-3)){
+	if (f(b)>0)
+	{
+		if(f((a+b)/2)>0)
+		{
+			b=(a+b)/2
+		}
+		else
+		{a=(a+b)/2}
+	}
+	if (f(b)<0)
+	{
+		b=2*b
+	}
+
+}
+return (b)
+}
+
 
 log_like=function (alpha,beta,resi_, carac, contrat_)
 {
@@ -43,9 +67,25 @@ log_like=function (alpha,beta,resi_, carac, contrat_)
 		return (res)
 	}
 
+	log_S = function(d,x,t){
+	
+		integral = exp(alpha)*d*d*(0.5*t+(1/3)*d)
+		expint = exp(crossprod(beta , x)) * integral
+		res = (-expint)
+		return (res)
+
+	}
+
+	log_lambda = function(d,x,t){
+
+		res = (log(Psi0(t+d))+ log(Psi1(d)) + crossprod(beta,x))
+		return (res)
+
+	}
+
 	log_density = function (d,x,t)
 	{
-		res = log(lambda(d,x,t)) + log(S(d,x,t))
+		res = log_lambda(d,x,t) + log_S(d,x,t)
 		return (res)
 	}
 
@@ -55,9 +95,14 @@ log_like=function (alpha,beta,resi_, carac, contrat_)
 
 	logcontribution=function(d,x,t)
 	{
+		if (abs(log_S(t_end-t,x,t))>log(10^-7)){
 		return(log_density(d,x,t)-log(1-S(t_end-t,x,t)))
+		}
+		else
+		{
+		return (log_density(d,x,t)+S(t_end-t,x,t))
+		}
 	}
-	
 	contrib=NULL
 	for (i in 1:length(contrat_))
 	{
@@ -83,7 +128,24 @@ invFdr=function(u,x,t)
             return (d)
         }
 
+
+	  invFdr=function(u,x,t)
+        {	
+		f=function (d)
+		{
+			A=d^2*(t*(exp(alpha))*0.5+(d*exp(alpha))/3)
+
+			B=-exp(crossprod(beta , x))
+
+			return ((log(1-u)-A*B))
+		}
+
+		d=resou(f)
+            return (d)
+        }
+
 resi = (delta_age)
+
 
 nb_carac =2
 
@@ -126,6 +188,16 @@ for (i in 1:n_datamatrix){
 
 
 }
+#n_datamatrixclean = size(datamatrix)[1]
+
+#On enleve les valeurs negatives de resi
+for (k in 1:  size(datamatrix)[1]){
+	if(k<= size(datamatrix)[1]){
+	if (datamatrix[k,1]<0){
+		datamatrix = datamatrix[-k,]
+	}
+	}
+}
 
 n_datamatrixclean = size(datamatrix)[1]
 
@@ -156,16 +228,19 @@ Vminuslike=function (alpha,beta1,beta2)
 	
 	while( (class(papatry)=="try-error") & (nbessais <=nbessais_max) ){
 
-		init[1] = init[1] + 0.01
-		init[2] = init[2] + 0.05
-		init[3] = init[3] - 0.02
+		init[1] = init[1] + ((-1)^(nbessais))*0.1*(nbessais/3)
+		init[2] = init[2] + ((-1)^(nbessais))*0.05*(nbessais)
+		init[3] = init[3] + ((-1)^(nbessais))* 0.2*(nbessais/3)
 	
 		papatry = try(mle(Vminuslike,start=list(alpha=init[1],beta1=init[2],beta2=init[3]),method="BFGS"),silent = T)
 		nbessais = nbessais+1
 	
 	}
 
-      papa=mle(Vminuslike,start=list(alpha=init[1],beta1=init[2],beta2=init[3]))  #,method="BFGS"
+      papa=mle(Vminuslike,start=list(alpha=init[1],beta1=init[2],beta2=init[3]),method="BFGS")
+
+Vminuslike(init[1],init[2],init[3])
+log_like(init[1],init[2:3],resi_clean,caracteristique_clean,contrat_clean)
 
 
 estimle = NULL
@@ -173,6 +248,10 @@ estimle = NULL
         estimle[2]=papa@coef[[2]]
         estimle[3]=papa@coef[[3]]
 
+varestim = NULL
+	varestim[1]=vcov(papa)[1,1]
+	varestim[2]=vcov(papa)[2,2]
+	varestim[3]=vcov(papa)[3,3]
 
     alphaestim=(estimle[1])
     beta1estim=(estimle[2])
@@ -180,5 +259,12 @@ estimle = NULL
 
 
    alphaestim
+sqrt(varestim[1])
+
     beta1estim
+sqrt(varestim[2])
+
 	beta2estim
+sqrt(varestim[3])
+
+
