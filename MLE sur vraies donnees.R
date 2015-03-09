@@ -8,7 +8,7 @@
    inf=5000   #borne de la date de contrat: 
    sup=20000
 
-    init=c(4.65,0.1,1.2) *(10^(-2)) # initialiseur de la fonction mle
+    init=c(10,-1/9,-4) # initialiseur de la fonction mle
 	x0=1.2    #initialisation de fsolve
 
 resou= function (f)   # trouver le zero d'une fonction croissante
@@ -216,6 +216,11 @@ Vminuslike=function (alpha,beta1,beta2)
             return (-log_like(alpha,beta,resi_clean,caracteristique_clean,contrat_clean))
         }
 
+Vminuslikev=function (X)
+        {
+	return (Vminuslike(X[1],X[2],X[3]))
+
+      }
 
 
 
@@ -224,7 +229,7 @@ Vminuslike=function (alpha,beta1,beta2)
 	
 
 	nbessais = 0
-	nbessais_max = 10
+	nbessais_max = 100
 	
 	while( (class(papatry)=="try-error") & (nbessais <=nbessais_max) ){
 
@@ -238,6 +243,9 @@ Vminuslike=function (alpha,beta1,beta2)
 	}
 
       papa=mle(Vminuslike,start=list(alpha=init[1],beta1=init[2],beta2=init[3]),method="BFGS")
+
+	mama = optim(init, Vminuslikev)
+
 
 Vminuslike(init[1],init[2],init[3])
 log_like(init[1],init[2:3],resi_clean,caracteristique_clean,contrat_clean)
@@ -268,3 +276,7 @@ sqrt(varestim[2])
 sqrt(varestim[3])
 
 
+	estimlem = mama$par
+alphaestimm = estimlem[1]
+beta1estimm = estimlem[2]
+beta2estimm = estimlem[3]
