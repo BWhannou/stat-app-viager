@@ -8,7 +8,7 @@
    inf=5000   #borne de la date de contrat: 
    sup=20000
 
-    init=c(10,-1/9,-4) # initialiseur de la fonction mle
+    init=c(-10,-1/9,-4) # initialiseur de la fonction mle
 	x0=1.2    #initialisation de fsolve
 
 resou= function (f)   # trouver le zero d'une fonction croissante
@@ -34,8 +34,11 @@ while((abs(a-b))>(10^-3)){
 return (b)
 }
 
+fun = function (x,s=1){
+	return (x*s)
+}
 
-log_like=function (alpha,beta,resi_, carac, contrat_)
+log_like=function (alpha,beta,resi_, carac, contrat_, k=0)
 {
 
 
@@ -50,7 +53,7 @@ log_like=function (alpha,beta,resi_, carac, contrat_)
 	{
 	# d est un nombre (date en numérique)
 	
-	return ( exp(alpha) * d)
+	return ( exp(alpha[k+1]) * d)
 	}
 
 	lambda = function (d,x,t)
@@ -61,7 +64,7 @@ log_like=function (alpha,beta,resi_, carac, contrat_)
 
 	S=function(d,x,t)
 	{
-		integral = exp(alpha)*d*d*(0.5*t+(1/3)*d)
+		integral = exp(alpha[k+1])*d*d*(0.5*t+(1/3)*d)
 		expint = exp(crossprod(beta , x)) * integral
 		res = exp(-expint)
 		return (res)
@@ -69,7 +72,7 @@ log_like=function (alpha,beta,resi_, carac, contrat_)
 
 	log_S = function(d,x,t){
 	
-		integral = exp(alpha)*d*d*(0.5*t+(1/3)*d)
+		integral = exp(alpha[k+1])*d*d*(0.5*t+(1/3)*d)
 		expint = exp(crossprod(beta , x)) * integral
 		res = (-expint)
 		return (res)
@@ -143,14 +146,37 @@ invFdr=function(u,x,t)
 		d=resou(f)
             return (d)
         }
+Fdr = function (x,t,d,alpha,beta){
+			A=d^2*(t*(exp(alpha))*0.5+(d*exp(alpha))/3)
 
-resi = (delta_age)
+			B=exp(crossprod(beta , x))
+			return (1-exp(-A*B))
 
+}
+
+clone = 1 #On met 0 pour évaluer les seller et0 pour évaluer les clones
+
+resi_seller = delta_age
+resi_clone = delta_age_clone
+
+
+resi = resi_clone
+
+if (clone ==0){
+	resi =resi_seller
+}
 
 nb_carac =2
 
-x1 = T1sex
-x2 = age_at_viager/100
+x1 = T1sex-1
+x2_seller = age_at_viager/100
+x2_clone = age_at_viager_clone/100
+
+x2 = x2_clone
+
+if (clone ==0){
+	x2 = x2_seller
+}
 
 #Ces deux caractéristiques ont même longueur
 
@@ -229,7 +255,7 @@ Vminuslikev=function (X)
 	
 
 	nbessais = 0
-	nbessais_max = 100
+	nbessais_max = 20
 	
 	while( (class(papatry)=="try-error") & (nbessais <=nbessais_max) ){
 
@@ -280,3 +306,67 @@ sqrt(varestim[3])
 alphaestimm = estimlem[1]
 beta1estimm = estimlem[2]
 beta2estimm = estimlem[3]
+estimlem 
+
+#on ne stocke pas les résultats dans les mêmes variables suivant la valeur de clone
+
+if( clone ==1){
+	estimle_clone = estimle
+	estimlem_clone = estimlem
+
+	alpha_clone = mean(c(alphaestim,alphaestimm))
+	beta1_clone = mean(c(beta1estim, beta1estimm))
+	beta2_clone = mean(c(beta2estim, beta2estimm))
+
+	beta_clone = c(beta1_clone, beta2_clone)
+
+}
+
+if ( clone ==0){
+	estimle_seller = estimle
+	estimlem_seller = estimlem
+
+	alpha_seller = mean(c(alphaestim,alphaestimm))
+	beta1_seller = mean(c(beta1estim, beta1estimm))
+	beta2_seller = mean(c(beta2estim, beta2estimm))
+
+	beta_seller = c(beta1_seller, beta2_seller)
+
+}
+
+invFdrpara=function(u,x,t,alpha,beta)
+        {	
+		f=function (d)
+		{
+			A=d^2*(t*(exp(alpha))*0.5+(d*exp(alpha))/3)
+
+			B=-exp(crossprod(beta , x))
+
+			return ((log(1-u)-A*B))
+		}
+
+		d=resou(f)
+            return (d)
+        }
+
+
+kstest =NULL
+
+n_kstest = 100
+
+for (i in 1:n_datamatrixclean){
+	tirage_seller = NULL
+	tirage_clone = NULL
+	u = runif(n_kstest)
+
+	for(j in 1:n_kstest){
+
+		tirage_seller[j] = invFdrpara( u[j],caracteristique_clean[i,],contrat_clean[i],alpha_seller,beta_seller )
+		tirage_clone[j] = invFdrpara(u[j],caracteristique_clean[i,],contrat_clean[i],alpha_clone,beta_clone)
+	}
+
+
+	kstest[i] = ks.test(tirage_seller,tirage_clone)$p.value
+}
+kstest
+
