@@ -20,6 +20,10 @@ library(survival)
 	medresi=NULL
 	minresi=NULL
 	maxresi=NULL
+	
+	alphestim_v = NULL
+	beta1estim_v = NULL
+	beta2estim_v = NULL
 
    inf=5000   #borne de la date de contrat: 
    sup=20000
@@ -37,7 +41,7 @@ varestim=matrix(rep(0,3*NbExp),ncol=3)
 for (boucle1 in 1:NbExp)
     {
 
-        # définition de la fonction inverse
+        # dÃ©finition de la fonction inverse
         
 	  invFdr=function(u,x,t)
         {	
@@ -53,10 +57,10 @@ for (boucle1 in 1:NbExp)
         {print("ah")
             # simulation du vecteur x
             x=NULL
-            x[1]=runif(1,60,90)            # c'est l'âge
+            x[1]=runif(1,60,90)            # c'est l'Ã¢ge
             x[2]=sample(1:2,1,0.5)      # c'est le sexe
 
-            # simulation de la durée du contrat
+            # simulation de la durÃ©e du contrat
             t=runif(1,inf,sup)         # simulation suivant une loi uniforme. On pourra toujours      modifier
             u=runif(1,0,(1-10^-7))
             d=invFdr(u,x,t)
@@ -70,11 +74,11 @@ for (boucle1 in 1:NbExp)
             else
             {
 			status=c(status,0)
-                Nbrej[boucle1]=Nbrej[boucle1]+1   # on incrémente à la position  boucle1
+                Nbrej[boucle1]=Nbrej[boucle1]+1   # on incrÃ©mente Ã  la position  boucle1
             
 		}
 
-		    resi=c(resi,d)                     # quand on accepte on      incrémente le compteur
+		    resi=c(resi,d)                     # quand on accepte on      incrÃ©mente le compteur
                 contrat=c(contrat,t)
                 age=c(age,x[1])
 			sex=c(sex,x[2])
@@ -98,14 +102,17 @@ for (boucle1 in 1:NbExp)
 	status_=status[which(status==1)]
 	resultat_ <- data.frame(resi_,status_,contrat_,age_,sex_)
 	b=coxph(formula = Surv(resi_, status_) ~ contrat_ + age_ + sex_, data = resultat_)
-
-
+	alphaestim_v[boucle1] = b$ceof[[1]]
+	beta1estim_v[boucle1] = b$coef[[2]]
+	beta2estim_v[boucle1] = b$coef[[3]]
 }
 
+alphaestim = mean(alphaestim_v)
+beta1estim = mean(beta1estim_v)
+beta2estim = mean(beta2estim_v)
 
-
-    alphaestim=mean(estimle[,1])
-    beta1estim=mean(estimle[,2])
-    beta2estim=mean(estimle[,3])
+    #alphaestim=mean(estimle[,1])
+    #beta1estim=mean(estimle[,2])
+    #beta2estim=mean(estimle[,3])
 
 log(-(2/(K*t*t))*log(1-u))
