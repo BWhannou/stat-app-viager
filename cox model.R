@@ -92,7 +92,12 @@ for (boucle1 in 1:NbExp)
 	a=coxph(formula = Surv(resi, status) ~ contrat + age + sex, data = resultat)
 
 	resi_=resi[which(status==1)]
-a=coxph(formula = Surv(resi, status) ~ contrat + age + sex, data = resultat)
+	contrat_=contrat[which(status==1)]
+	age_=age[which(status==1)]
+	sex_=sex[which(status==1)]
+	status_=status[which(status==1)]
+	resultat_ <- data.frame(resi_,status_,contrat_,age_,sex_)
+	b=coxph(formula = Surv(resi_, status_) ~ contrat_ + age_ + sex_, data = resultat_)
 
 
 }
