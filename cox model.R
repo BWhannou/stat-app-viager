@@ -21,9 +21,14 @@ library(survival)
 	minresi=NULL
 	maxresi=NULL
 	
-	alphestim_v = NULL
-	beta1estim_v = NULL
-	beta2estim_v = NULL
+	a_alphestim_v = NULL
+	a_beta1estim_v = NULL
+	a_beta2estim_v = NULL
+
+
+	b_alphestim_v = NULL
+	b_beta1estim_v = NULL
+	b_beta2estim_v = NULL
 
    inf=5000   #borne de la date de contrat: 
    sup=20000
@@ -94,6 +99,10 @@ for (boucle1 in 1:NbExp)
 	minresi[boucle1]=min(resi)
 	maxresi[boucle1]=max(resi)
 	a=coxph(formula = Surv(resi, status) ~ contrat + age + sex, data = resultat)
+	a_alphaestim_v[boucle1] = a$ceof[[1]]
+	a_beta1estim_v[boucle1] = a$coef[[2]]
+	a_beta2estim_v[boucle1] = a$coef[[3]]
+
 
 	resi_=resi[which(status==1)]
 	contrat_=contrat[which(status==1)]
@@ -102,17 +111,30 @@ for (boucle1 in 1:NbExp)
 	status_=status[which(status==1)]
 	resultat_ <- data.frame(resi_,status_,contrat_,age_,sex_)
 	b=coxph(formula = Surv(resi_, status_) ~ contrat_ + age_ + sex_, data = resultat_)
-	alphaestim_v[boucle1] = b$ceof[[1]]
-	beta1estim_v[boucle1] = b$coef[[2]]
-	beta2estim_v[boucle1] = b$coef[[3]]
+	b_alphaestim_v[boucle1] = b$ceof[[1]]
+	b_beta1estim_v[boucle1] = b$coef[[2]]
+	b_beta2estim_v[boucle1] = b$coef[[3]]
 }
 
-alphaestim = mean(alphaestim_v)
-beta1estim = mean(beta1estim_v)
-beta2estim = mean(beta2estim_v)
+a_alphaestim = mean(a_alphaestim_v)
+a_beta1estim = mean(a_beta1estim_v)
+a_beta2estim = mean(a_beta2estim_v)
+
+b_alphaestim = mean(b_alphaestim_v)
+b_beta1estim = mean(b_beta1estim_v)
+b_beta2estim = mean(b_beta2estim_v)
 
     #alphaestim=mean(estimle[,1])
     #beta1estim=mean(estimle[,2])
     #beta2estim=mean(estimle[,3])
+
+a_alphaestim 
+a_beta1estim 
+a_beta2estim 
+
+b_beta2estim 
+b_beta1estim 
+b_alphaestim 
+
 
 log(-(2/(K*t*t))*log(1-u))
