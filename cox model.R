@@ -50,7 +50,7 @@ for (boucle1 in 1:NbExp)
         # boucle while
         boucle2=1
         while (boucle2<=NbInd)
-        {print("ah")
+        {
             # simulation du vecteur x
             x=NULL
             x[1]=runif(1,60,90)            # c'est l'âge
@@ -99,7 +99,7 @@ for (boucle1 in 1:NbExp)
 	resultat_ <- data.frame(resi_,status_,contrat_,age_,sex_)
 	b=coxph(formula = Surv(resi_, status_) ~ contrat_ + age_ + sex_, data = resultat_)
 
-
+plot(basehaz(a, centered = TRUE),ylim=c(-0.1,1000))
 }
 
 
