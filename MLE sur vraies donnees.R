@@ -11,11 +11,17 @@
     init=c(-10,-1/9,-4) # initialiseur de la fonction mle
 	x0=1.2    #initialisation de fsolve
 
+	
+
+##################### CHOIX CLONE/SELLER#################################
+clone = 0 #On met 0 pour évaluer les seller et 1 pour évaluer les clones
+#########################################################################
+
 resou= function (f)   # trouver le zero d'une fonction croissante
 {
 	a=0
 	b=15000
-while((abs(a-b))>(10^-3)){
+while((abs(a-b))>(10^-5)){
 	if (f(b)>0)
 	{
 		if(f((a+b)/2)>0)
@@ -34,35 +40,66 @@ while((abs(a-b))>(10^-3)){
 return (b)
 }
 
-fun = function (x,s=1){
-	return (x*s)
-}
 
-log_like=function (alpha,beta,resi_, carac, contrat_, k=0)
-{
-
-
-	Psi0 = function (x)
+Psi0 = function (x)
 	{
 	# x est un nombre (une date en numérique)
 	
 	return (x)
 	}
 
-	Psi1 = function (d)
+Psi1_exp = function (d,alpha,beta,k=0)
 	{
 	# d est un nombre (date en numérique)
 	
 	return ( exp(alpha[k+1]) * d)
 	}
 
-	lambda = function (d,x,t)
+
+Psi1_step = function(d,alpha,beta,k=0,step,resi_quartiles){
+	
+	#resi_quartiles doit être un vecteur de taille 3 avec le 1er quartile, la médiane et le troisième quartile
+	#step doit être un vecteur de longueur 4 contenant les valeurs des "marches" de l'escalier
+
+	if(d<=resi_quartiles[1]){
+		return (step[1])
+	}
+
+	if( (d>resi_quartiles[1]) & (d<= resi_quartiles[2]) ){
+		return (step[2])
+	}
+
+	if( (d>resi_quartiles[2]) & (d<= resi_quartiles[3]) ){
+		return (step[3])
+	}
+
+	if(d>resi_quartiles[3]){
+		return (step[4])
+	}
+
+
+}
+
+
+Psi1_Tcheby(d,alpha,beta,n){
+
+	vec = NULL
+	for (k in 1:floor(n/2)){
+		vec[k]= ((-1)^k)*(choose(n-k,k)) *(2*d)^(n-2*k)
+	}
+	
+
+}
+
+
+lambda = function (d,x,t,alpha,beta)
 	{
-	res = Psi0(t+d) * Psi1(d) * exp(crossprod(beta , x))
+	res = Psi0(t+d) * Psi1(d,alpha,beta) * exp(crossprod(beta , x))
 	return (res)
 	}
 
-	S=function(d,x,t)
+
+S=function(d,x,t,alpha,beta,k=0)
 	{
 		integral = exp(alpha[k+1])*d*d*(0.5*t+(1/3)*d)
 		expint = exp(crossprod(beta , x)) * integral
@@ -70,7 +107,7 @@ log_like=function (alpha,beta,resi_, carac, contrat_, k=0)
 		return (res)
 	}
 
-	log_S = function(d,x,t){
+log_S = function(d,x,t,alpha,beta,k=0){
 	
 		integral = exp(alpha[k+1])*d*d*(0.5*t+(1/3)*d)
 		expint = exp(crossprod(beta , x)) * integral
@@ -79,18 +116,23 @@ log_like=function (alpha,beta,resi_, carac, contrat_, k=0)
 
 	}
 
-	log_lambda = function(d,x,t){
+log_lambda = function(d,x,t,alpha,beta,k=0){
 
-		res = (log(Psi0(t+d))+ log(Psi1(d)) + crossprod(beta,x))
+		res = (log(Psi0(t+d))+ log(Psi1(d,alpha,beta)) + crossprod(beta,x))
 		return (res)
 
 	}
 
-	log_density = function (d,x,t)
+log_density = function (d,x,t,alpha,beta,k=0)
 	{
-		res = log_lambda(d,x,t) + log_S(d,x,t)
+		res = log_lambda(d,x,t,alpha,beta) + log_S(d,x,t,alpha,beta)
 		return (res)
 	}
+
+
+
+log_like=function (alpha,beta,resi_, carac, contrat_, k=0)
+{
 
 
 	###############################################################
@@ -98,12 +140,12 @@ log_like=function (alpha,beta,resi_, carac, contrat_, k=0)
 
 	logcontribution=function(d,x,t)
 	{
-		if (abs(log_S(t_end-t,x,t))>log(10^-7)){
-		return(log_density(d,x,t)-log(1-S(t_end-t,x,t)))
+		if (abs(log_S(t_end-t,x,t,alpha,beta))>log(10^-7)){
+		return(log_density(d,x,t,alpha,beta)-log(1-S(t_end-t,x,t,alpha,beta)))
 		}
 		else
 		{
-		return (log_density(d,x,t)+S(t_end-t,x,t))
+		return (log_density(d,x,t,alpha,beta)+S(t_end-t,x,t,alpha,beta))
 		}
 	}
 	contrib=NULL
@@ -132,7 +174,7 @@ invFdr=function(u,x,t)
         }
 
 
-	  invFdr=function(u,x,t)
+invFdr=function(u,x,t)
         {	
 		f=function (d)
 		{
@@ -154,7 +196,7 @@ Fdr = function (x,t,d,alpha,beta){
 
 }
 
-clone = 1 #On met 0 pour évaluer les seller et0 pour évaluer les clones
+
 
 resi_seller = delta_age
 resi_clone = delta_age_clone
@@ -165,6 +207,10 @@ resi = resi_clone
 if (clone ==0){
 	resi =resi_seller
 }
+
+#On va stocker les quartiles des resi selectionnées
+
+resi_quartiles = c(summary(resi)[[2]],summary(resi)[[3]],summary(resi)[[5]])
 
 nb_carac =2
 
@@ -235,6 +281,9 @@ contrat_clean = datamatrix[,4]
 caracteristique_clean = matrix(0,length(x1_clean),nb_carac)
 caracteristique_clean[,1] = x1_clean
 caracteristique_clean[,2] = x2_clean
+
+datamatrix_data = data.frame(resi_clean,contrat_clean,x1_clean,x2_clean)
+
 
 Vminuslike=function (alpha,beta1,beta2)
         {
@@ -319,6 +368,8 @@ if( clone ==1){
 	beta2_clone = mean(c(beta2estim, beta2estimm))
 
 	beta_clone = c(beta1_clone, beta2_clone)
+	
+	cox_clone = coxph(formula = Surv(resi_clean) ~ contrat_clean + x1_clean + x2_clean, data = datamatrix_data)
 
 }
 
@@ -331,6 +382,8 @@ if ( clone ==0){
 	beta2_seller = mean(c(beta2estim, beta2estimm))
 
 	beta_seller = c(beta1_seller, beta2_seller)
+
+	cox_seller = coxph(formula = Surv(resi_clean) ~ contrat_clean + x1_clean + x2_clean, data = datamatrix_data)
 
 }
 
@@ -346,13 +399,17 @@ invFdrpara=function(u,x,t,alpha,beta)
 		}
 
 		d=resou(f)
-            return (d)
+            #d=fsolve(f,x0)$x
+		return (d)
         }
 
 
 kstest =NULL
 
 n_kstest = 100
+
+matrix_seller = matrix(0,n_datamatrixclean,n_kstest)
+matrix_clone =  matrix(0,n_datamatrixclean,n_kstest)
 
 for (i in 1:n_datamatrixclean){
 	tirage_seller = NULL
@@ -365,8 +422,11 @@ for (i in 1:n_datamatrixclean){
 		tirage_clone[j] = invFdrpara(u[j],caracteristique_clean[i,],contrat_clean[i],alpha_clone,beta_clone)
 	}
 
+	matrix_seller[i,]= (tirage_seller)
+	matrix_clone[i,]= (tirage_clone)
 
 	kstest[i] = ks.test(tirage_seller,tirage_clone)$p.value
 }
 kstest
+
 
