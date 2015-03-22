@@ -87,8 +87,8 @@ Psi1_Tcheby(d,alpha,beta,n){
 	for (k in 1:floor(n/2)){
 		vec[k]= ((-1)^k)*(choose(n-k,k)) *(2*d)^(n-2*k)
 	}
+	return (sum(vec))
 	
-
 }
 
 
