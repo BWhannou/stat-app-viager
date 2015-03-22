@@ -81,7 +81,7 @@ Psi1_step = function(d,alpha,beta,k=0,step,resi_quartiles){
 }
 
 
-Psi1_Tcheby(d,alpha,beta,n){
+Psi1_Tcheby=function(d,alpha,beta,n){
 
 	vec = NULL
 	for (k in 1:floor(n/2)){
