@@ -17,6 +17,17 @@
 clone = 0 #On met 0 pour évaluer les seller et 1 pour évaluer les clones
 #########################################################################
 
+
+
+#################### CHOIX PSI ##################
+
+######## PSI1 #######
+expo = 0 
+step = 0
+#####################
+
+##################################################
+
 resou= function (f)   # trouver le zero d'une fonction croissante
 {
 	a=0
@@ -56,7 +67,7 @@ Psi1_exp = function (d,alpha,beta,k=0)
 	}
 
 
-Psi1_step = function(d,alpha,beta,k=0,step,resi_quartiles){
+Psi1_step_v = function(d,alpha,beta,k=0,step){   #,resi_quartiles){
 	
 	#resi_quartiles doit être un vecteur de taille 3 avec le 1er quartile, la médiane et le troisième quartile
 	#step doit être un vecteur de longueur 4 contenant les valeurs des "marches" de l'escalier
@@ -80,6 +91,13 @@ Psi1_step = function(d,alpha,beta,k=0,step,resi_quartiles){
 
 }
 
+Psi1_step = function(d,alpha,beta,step1,step2,step3,step4){
+
+		return ( Psi1_step_v(d,alpha,beta,c(step1,step2,step3,step4) )
+
+}
+
+
 
 Psi1_Tcheby=function(d,alpha,beta,n){
 
@@ -91,6 +109,15 @@ Psi1_Tcheby=function(d,alpha,beta,n){
 	
 }
 
+if (expo ==1){
+	Psi1 = Psi_exp
+}
+
+if (step ==1){
+	Psi1 = Psi1_step
+}
+
+if (expo==1){
 
 lambda = function (d,x,t,alpha,beta)
 	{
@@ -159,6 +186,90 @@ log_like=function (alpha,beta,resi_, carac, contrat_, k=0)
 
 
 }
+
+
+} #Fin du if Psi1 == Psi1_exp
+
+
+if (step==1){
+
+lambda = function (d,x,t,alpha,beta,step1,step2,step3,step4)
+	{
+	res = Psi0(t+d) * Psi1(d,alpha,beta,step1,step2,step3,step4) * exp(crossprod(beta , x))
+	return (res)
+	}
+
+
+S=function(d,x,t,alpha,beta,k=0,step1,step2,step3,step4)
+	{
+		integral = exp(alpha[k+1])*d*d*(0.5*t+(1/3)*d)
+		expint = exp(crossprod(beta , x)) * integral
+		res = exp(-expint)
+		return (res)
+	}
+
+log_S = function(d,x,t,alpha,beta,k=0){
+	
+		integral = 
+		expint = exp(crossprod(beta , x)) * integral
+		res = (-expint)
+		return (res)
+
+	}
+
+log_lambda = function(d,x,t,alpha,beta,k=0){
+
+		res = (log(Psi0(t+d))+ log(Psi1(d,alpha,beta)) + crossprod(beta,x))
+		return (res)
+
+	}
+
+log_density = function (d,x,t,alpha,beta,k=0)
+	{
+		res = log_lambda(d,x,t,alpha,beta) + log_S(d,x,t,alpha,beta)
+		return (res)
+	}
+
+
+
+log_like=function (alpha,beta,resi_, carac, contrat_, k=0)
+{
+
+
+	###############################################################
+############# contribution du seller
+
+	logcontribution=function(d,x,t)
+	{
+		if (abs(log_S(t_end-t,x,t,alpha,beta))>log(10^-7)){
+		return(log_density(d,x,t,alpha,beta)-log(1-S(t_end-t,x,t,alpha,beta)))
+		}
+		else
+		{
+		return (log_density(d,x,t,alpha,beta)+S(t_end-t,x,t,alpha,beta))
+		}
+	}
+	contrib=NULL
+	for (i in 1:length(contrat_))
+	{
+		contrib[i]=logcontribution(resi_[i],carac[i,],contrat_[i])
+	}
+
+
+	return (sum(contrib,na.rm=TRUE))	
+
+
+}
+
+}#Fin du if Psi1 == Psi_step
+
+
+
+
+
+
+
+
 
 invFdr=function(u,x,t)
 	{	
