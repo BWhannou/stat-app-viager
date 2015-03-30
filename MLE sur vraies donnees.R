@@ -11,8 +11,6 @@
     init=c(-10,-1/9,-4) # initialiseur de la fonction mle
 	x0=1.2    #initialisation de fsolve
 
-	
-
 ##################### CHOIX CLONE/SELLER#################################
 clone = 0 #On met 0 pour évaluer les seller et 1 pour évaluer les clones
 #########################################################################
@@ -59,6 +57,19 @@ Psi0 = function (x)
 	return (x)
 	}
 
+
+
+Psi0_Tcheby=function(d,alpha,beta,n){
+
+	vec = NULL
+	for (k in 1:floor(n/2)){
+		vec[k]= ((-1)^k)*(choose(n-k,k)) *(2*d)^(n-2*k)
+	}
+	return (sum(vec))
+	
+}
+
+
 Psi1_exp = function (d,alpha,beta,k=0)
 	{
 	# d est un nombre (date en numérique)
@@ -95,18 +106,6 @@ Psi1_step = function(d,alpha,beta,step1,step2,step3,step4){
 
 		return ( Psi1_step_v(d,alpha,beta,c(step1,step2,step3,step4) )
 
-}
-
-
-
-Psi1_Tcheby=function(d,alpha,beta,n){
-
-	vec = NULL
-	for (k in 1:floor(n/2)){
-		vec[k]= ((-1)^k)*(choose(n-k,k)) *(2*d)^(n-2*k)
-	}
-	return (sum(vec))
-	
 }
 
 if (expo ==1){
@@ -202,10 +201,29 @@ lambda = function (d,x,t,alpha,beta,step1,step2,step3,step4)
 
 S=function(d,x,t,alpha,beta,k=0,step1,step2,step3,step4)
 	{
-		integral = exp(alpha[k+1])*d*d*(0.5*t+(1/3)*d)
+
+		integral = (1/2)*(d*d)
 		expint = exp(crossprod(beta , x)) * integral
-		res = exp(-expint)
-		return (res)
+		
+
+		if (d<= resi_qaurtiles[1]){
+			return ( exp(-step1*expint) )
+		}
+
+
+		if ( (d> resi_qaurtiles[1]) &(d<= resi_quartiles[2]) ){
+			return (exp(-step2*expint))
+		}
+
+		if ( (d> resi_qaurtiles[2]) &(d<= resi_quartiles[3]) ){
+			return (exp(-step3*expint))
+		}
+
+		if (d> resi_qaurtiles[3]){
+			return (exp(-step4*expint))
+		}
+
+		
 	}
 
 log_S = function(d,x,t,alpha,beta,k=0){
@@ -407,11 +425,45 @@ Vminuslikev=function (X)
 	return (Vminuslike(X[1],X[2],X[3]))
 
       }
+#On veut avoir resi_clean comme une matrice avec deux colonnes : 1 pour les sellers et 2 pour les clones
+
+#il faut avoir les caracteristiques sous deux matrices différentes pour clones et sellers
+#caracteristique_clean_s et #caracteristique_clean_c
+
+if (clone == 0){
+	caracteristique_clean_s = caracteristique_clean
+}
+
+if (clone == 1){
+	caracteristique_clean_c = caracteristique_clean
+}
 
 
 
+###############################################################
+###### !! Fin de la différence entre clone =0 et clone =1 !! ##
+###############################################################
 
-	papatry = try(mle(Vminuslike,start=list(alpha=init[1],beta1=init[2],beta2=init[3]),method="BFGS"),silent = T)
+Vminuslike_tot=function (alpha_s,beta1_s,beta2_s,alpha_c,beta1_c,beta2_c)
+        {
+            beta_s=c(beta1_s,beta2_s)
+		beta_c=c(beta1_c,beta2_c)
+            return (-log_like(alpha_s,beta_s,resi_clean[,1],caracteristique_clean_s,contrat_clean[,1])
+				- log_like(alpha_c, beta_c, resi_clean[,2], caracteristique_clean_c, contrat_clean[,2]
+				)
+        }
+
+Vminuslikev_tot=function (X)
+        {
+	X_s  = X[1:3]
+	X_c = X[4:6]
+	return (Vminuslike(X_s[1],X_s[2],X_s[3],X_c[1],X_c[2],X_c[3]))
+
+      }
+
+
+
+	papatry = try(mle(Vminuslike_tot,start=list(alpha_s=init[1],beta1_s=init[2],beta2_s=init[3],alpha_c=init[1],beta1_c=init[2],beta2_c=init[3]),method="BFGS"),silent = T)
 	
 
 	nbessais = 0
@@ -423,18 +475,18 @@ Vminuslikev=function (X)
 		init[2] = init[2] + ((-1)^(nbessais))*0.05*(nbessais)
 		init[3] = init[3] + ((-1)^(nbessais))* 0.2*(nbessais/3)
 	
-		papatry = try(mle(Vminuslike,start=list(alpha=init[1],beta1=init[2],beta2=init[3]),method="BFGS"),silent = T)
+		papatry = try(mle(Vminuslike_tot,start=list(alpha_s=init[1],beta1_s=init[2],beta2_s=init[3],alpha_c=init[1],beta1_c=init[2],beta2_c=init[3]),method="BFGS"),silent = T)
 		nbessais = nbessais+1
 	
 	}
 
-      papa=mle(Vminuslike,start=list(alpha=init[1],beta1=init[2],beta2=init[3]),method="BFGS")
+      papa=mle(Vminuslike_tot,start=list(alpha_s=init[1],beta1_s=init[2],beta2_s=init[3],alpha_c=init[1],beta1_c=init[2],beta2_c=init[3]),method="BFGS")
 
-	mama = optim(init, Vminuslikev)
+	mama = optim(c(init,init), Vminuslikev)
 
 
-Vminuslike(init[1],init[2],init[3])
-log_like(init[1],init[2:3],resi_clean,caracteristique_clean,contrat_clean)
+Vminuslike_tot(init[1],init[2],init[3],init[1],init[2],init[3])
+#log_like(init[1],init[2:3],resi_clean,caracteristique_clean,contrat_clean)
 
 
 estimle = NULL
@@ -480,7 +532,7 @@ if( clone ==1){
 
 	beta_clone = c(beta1_clone, beta2_clone)
 	
-	cox_clone = coxph(formula = Surv(resi_clean) ~ contrat_clean + x1_clean + x2_clean, data = datamatrix_data)
+	#cox_clone = coxph(formula = Surv(resi_clean) ~ contrat_clean + x1_clean + x2_clean, data = datamatrix_data)
 
 }
 
@@ -494,7 +546,7 @@ if ( clone ==0){
 
 	beta_seller = c(beta1_seller, beta2_seller)
 
-	cox_seller = coxph(formula = Surv(resi_clean) ~ contrat_clean + x1_clean + x2_clean, data = datamatrix_data)
+	#cox_seller = coxph(formula = Surv(resi_clean) ~ contrat_clean + x1_clean + x2_clean, data = datamatrix_data)
 
 }
 
@@ -515,29 +567,29 @@ invFdrpara=function(u,x,t,alpha,beta)
         }
 
 
-kstest =NULL
+#kstest =NULL
 
-n_kstest = 100
+#n_kstest = 100
 
-matrix_seller = matrix(0,n_datamatrixclean,n_kstest)
-matrix_clone =  matrix(0,n_datamatrixclean,n_kstest)
+#matrix_seller = matrix(0,n_datamatrixclean,n_kstest)
+#matrix_clone =  matrix(0,n_datamatrixclean,n_kstest)
 
-for (i in 1:n_datamatrixclean){
-	tirage_seller = NULL
-	tirage_clone = NULL
-	u = runif(n_kstest)
-
-	for(j in 1:n_kstest){
-
-		tirage_seller[j] = invFdrpara( u[j],caracteristique_clean[i,],contrat_clean[i],alpha_seller,beta_seller )
-		tirage_clone[j] = invFdrpara(u[j],caracteristique_clean[i,],contrat_clean[i],alpha_clone,beta_clone)
-	}
-
-	matrix_seller[i,]= (tirage_seller)
-	matrix_clone[i,]= (tirage_clone)
-
-	kstest[i] = ks.test(tirage_seller,tirage_clone)$p.value
-}
-kstest
+#for (i in 1:n_datamatrixclean){
+#	tirage_seller = NULL
+#	tirage_clone = NULL
+#	u = runif(n_kstest)
+#
+#	for(j in 1:n_kstest){
+#
+#		tirage_seller[j] = invFdrpara( u[j],caracteristique_clean[i,],contrat_clean[i],alpha_seller,beta_seller )
+#		tirage_clone[j] = invFdrpara(u[j],caracteristique_clean[i,],contrat_clean[i],alpha_clone,beta_clone)
+#	}
+#
+#	matrix_seller[i,]= (tirage_seller)
+#	matrix_clone[i,]= (tirage_clone)
+#
+#	kstest[i] = ks.test(tirage_seller,tirage_clone)$p.value
+#}
+#kstest
 
 
