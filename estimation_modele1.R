@@ -1,6 +1,6 @@
   library(stats4)  # mle
 t_end=21000
-    init0=c(-8,-0.5,-3)  # initialiseur de la fonction mle
+    init0=c(-6.8,1.3,-0.6)  # initialiseur de la fonction mle
 ##############################################################
 ################# CHARGEMENT DES DONNEES #####################
 ##############################################################
