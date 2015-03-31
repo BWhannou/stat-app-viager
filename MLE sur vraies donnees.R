@@ -11,21 +11,6 @@
     init=c(-10,-1/9,-4) # initialiseur de la fonction mle
 	x0=1.2    #initialisation de fsolve
 
-##################### CHOIX CLONE/SELLER#################################
-clone = 0 #On met 0 pour évaluer les seller et 1 pour évaluer les clones
-#########################################################################
-
-
-
-#################### CHOIX PSI ##################
-
-######## PSI1 #######
-expo = 0 
-step = 0
-#####################
-
-##################################################
-
 resou= function (f)   # trouver le zero d'une fonction croissante
 {
 	a=0
@@ -48,6 +33,24 @@ while((abs(a-b))>(10^-5)){
 }
 return (b)
 }
+
+
+##################### CHOIX CLONE/SELLER#################################
+clone = 0 #On met 0 pour évaluer les seller et 1 pour évaluer les clones
+#########################################################################
+
+
+
+#################### CHOIX PSI ##################
+
+######## PSI1 #######
+expo = 0 
+step = 0
+#####################
+
+##################################################
+
+
 
 
 Psi0 = function (x)
@@ -78,7 +81,7 @@ Psi1_exp = function (d,alpha,beta,k=0)
 	}
 
 
-Psi1_step_v = function(d,alpha,beta,k=0,step){   #,resi_quartiles){
+Psi1_step_v = function(d,beta,k=0,step){   #,resi_quartiles){
 	
 	#resi_quartiles doit être un vecteur de taille 3 avec le 1er quartile, la médiane et le troisième quartile
 	#step doit être un vecteur de longueur 4 contenant les valeurs des "marches" de l'escalier
@@ -104,7 +107,7 @@ Psi1_step_v = function(d,alpha,beta,k=0,step){   #,resi_quartiles){
 
 Psi1_step = function(d,alpha,beta,step1,step2,step3,step4){
 
-		return ( Psi1_step_v(d,alpha,beta,c(step1,step2,step3,step4) )
+		return ( Psi1_step_v(d,beta,c(step1,step2,step3,step4) )
 
 }
 
@@ -192,65 +195,92 @@ log_like=function (alpha,beta,resi_, carac, contrat_, k=0)
 
 if (step==1){
 
-lambda = function (d,x,t,alpha,beta,step1,step2,step3,step4)
+lambda = function (d,x,t,beta,step1,step2,step3,step4)
 	{
-	res = Psi0(t+d) * Psi1(d,alpha,beta,step1,step2,step3,step4) * exp(crossprod(beta , x))
+	res = Psi0(t+d) * Psi1(d,beta,step1,step2,step3,step4) * exp(crossprod(beta , x))
 	return (res)
 	}
 
 
-S=function(d,x,t,alpha,beta,k=0,step1,step2,step3,step4)
+S=function(d,x,t,beta,k=0,step1,step2,step3,step4)
 	{
+		f= function (x){
+			return (0.5*x^2)
+		}
+
 
 		integral = (1/2)*(d*d)
 		expint = exp(crossprod(beta , x)) * integral
+		exp_b_x = exp(crossprod(beta,x))
 		
 
-		if (d<= resi_qaurtiles[1]){
+		if (d<= resi_quartiles[1]){
 			return ( exp(-step1*expint) )
 		}
 
 
-		if ( (d> resi_qaurtiles[1]) &(d<= resi_quartiles[2]) ){
-			return (exp(-step2*expint))
+		if ( (d> resi_quartiles[1]) &(d<= resi_quartiles[2]) ){
+			return (exp(- exp_b_x*(step1*f(resi_quartiles[1]) + step2*f(d-resi_quartiles[1]) )  ) )
 		}
 
-		if ( (d> resi_qaurtiles[2]) &(d<= resi_quartiles[3]) ){
-			return (exp(-step3*expint))
+		if ( (d> resi_quartiles[2]) &(d<= resi_quartiles[3]) ){
+			return (exp(- exp_b_x*(step1*f(resi_quartiles[1]) + step2*f(resi_quartiles[2]-resi_quartiles[1]) +step3*f(d-resi_quartiles[2]) )    ))
 		}
 
-		if (d> resi_qaurtiles[3]){
-			return (exp(-step4*expint))
+		if (d> resi_quartiles[3]){
+			return (exp(- exp_b_x*(step1*f(resi_quartiles[1]) + step2*f(resi_quartiles[2]-resi_quartiles[1]) +step3*f(resi_quartiles[3]-resi_quartiles[2]) +step4*f(d-resi_quartiles[3]) ) ))
 		}
 
 		
 	}
 
-log_S = function(d,x,t,alpha,beta,k=0){
-	
-		integral = 
+log_S = function(d,x,t,beta,k=0,step1,step2,step3,step4){
+		f= function (x){
+			return (0.5*x^2)
+		}
+
+
+		integral = (1/2)*(d*d)
 		expint = exp(crossprod(beta , x)) * integral
-		res = (-expint)
+		exp_b_x = exp(crossprod(beta,x))
+		
+
+		if (d<= resi_quartiles[1]){
+			return ( (-step1*expint) )
+		}
+
+
+		if ( (d> resi_quartiles[1]) &(d<= resi_quartiles[2]) ){
+			return ((- exp_b_x*(step1*f(resi_quartiles[1]) + step2*f(d-resi_quartiles[1]) )  ) )
+		}
+
+		if ( (d> resi_quartiles[2]) &(d<= resi_quartiles[3]) ){
+			return ((- exp_b_x*(step1*f(resi_quartiles[1]) + step2*f(resi_quartiles[2]-resi_quartiles[1]) +step3*f(d-resi_quartiles[2]) )    ))
+		}
+
+		if (d> resi_quartiles[3]){
+			return ((- exp_b_x*(step1*f(resi_quartiles[1]) + step2*f(resi_quartiles[2]-resi_quartiles[1]) +step3*f(resi_quartiles[3]-resi_quartiles[2]) +step4*f(d-resi_quartiles[3]) ) ))
+		}
+
+
+}
+
+log_lambda = function(d,x,t,beta,k=0,step1,step2,step3,step4){
+
+		res = (log(Psi0(t+d))+ log(Psi1(d,beta,step1,step2,step3,step4)) + crossprod(beta,x))
 		return (res)
 
 	}
 
-log_lambda = function(d,x,t,alpha,beta,k=0){
-
-		res = (log(Psi0(t+d))+ log(Psi1(d,alpha,beta)) + crossprod(beta,x))
-		return (res)
-
-	}
-
-log_density = function (d,x,t,alpha,beta,k=0)
+log_density = function (d,x,t,beta,k=0,step1,step2,step3,step4)
 	{
-		res = log_lambda(d,x,t,alpha,beta) + log_S(d,x,t,alpha,beta)
+		res = log_lambda(d,x,t,beta,step1,step2,step3,step4) + log_S(d,x,t,beta,step1,step2,step3,step4)
 		return (res)
 	}
 
 
 
-log_like=function (alpha,beta,resi_, carac, contrat_, k=0)
+log_like=function (beta,resi_, carac, contrat_, k=0,step1,step2,step3,step4)
 {
 
 
@@ -259,12 +289,12 @@ log_like=function (alpha,beta,resi_, carac, contrat_, k=0)
 
 	logcontribution=function(d,x,t)
 	{
-		if (abs(log_S(t_end-t,x,t,alpha,beta))>log(10^-7)){
-		return(log_density(d,x,t,alpha,beta)-log(1-S(t_end-t,x,t,alpha,beta)))
+		if (abs(log_S(t_end-t,x,t,beta,step1,step2,step3,step4))>log(10^-7)){
+		return(log_density(d,x,t,beta,step1,step2,step3,step4)-log(1-S(t_end-t,x,t,beta,step1,step2,step3,step4)))
 		}
 		else
 		{
-		return (log_density(d,x,t,alpha,beta)+S(t_end-t,x,t,alpha,beta))
+		return (log_density(d,x,t,beta,step1,step2,step3,step4)+S(t_end-t,x,t,beta,step1,step2,step3,step4))
 		}
 	}
 	contrib=NULL
