@@ -44,7 +44,7 @@ clone = 0 #On met 0 pour évaluer les seller et 1 pour évaluer les clones
 #################### CHOIX PSI ##################
 
 ######## PSI1 #######
-expo = 0 
+expo = 1
 step = 0
 #####################
 
@@ -112,7 +112,7 @@ Psi1_step = function(d,alpha,beta,step1,step2,step3,step4){
 }
 
 if (expo ==1){
-	Psi1 = Psi_exp
+	Psi1 = Psi1_exp
 }
 
 if (step ==1){
@@ -374,8 +374,8 @@ resi_quartiles = c(summary(resi)[[2]],summary(resi)[[3]],summary(resi)[[5]])
 nb_carac =2
 
 x1 = T1sex-1
-x2_seller = age_at_viager/100
-x2_clone = age_at_viager_clone/100
+x2_seller = age_at_viager/10
+x2_clone = age_at_viager_clone/10
 
 x2 = x2_clone
 
@@ -404,22 +404,26 @@ datamatrix[,nb_carac+2]= contrat
 
 n_datamatrix = size(datamatrix)[1]
 
+  
 
 for (i in 1:n_datamatrix){
 	if( i <=size(datamatrix)[1]){
 		#Si la ligne a un NA, on la supprime
-	if ( length(na.omit(datamatrix[i,]))==2+nb_carac )
+  
+  if ( prod(!is.na(datamatrix[i,])) ==0) #on utilise le fait que TRUE*TRUE =1, TRUE*FAlSE =0 et FALSE*FALSE=0 pour tester s'il ya un NA
+  {
+    datamatrix = datamatrix[-i,] #on enlève la ligne avec le NA
+  }
+    
+  else 
 		{
-		}
-	else 
-		{
-			datamatrix = datamatrix[-i,] #on enlève la ligne avec le NA
+			
 		}
 	}
 
 
 }
-#n_datamatrixclean = size(datamatrix)[1]
+  
 
 #On enleve les valeurs negatives de resi
 for (k in 1:  size(datamatrix)[1]){
@@ -459,12 +463,15 @@ Vminuslikev=function (X)
 
 #il faut avoir les caracteristiques sous deux matrices différentes pour clones et sellers
 #caracteristique_clean_s et #caracteristique_clean_c
-
+resi_clean_mat = matrix(0,length(resi_clean),2) #on va stocker dansl a première colonne les resi_clean seller et dans la 2 les resi_clean clone
+  
 if (clone == 0){
+  resi_clean_mat[,1] =resi_clean 
 	caracteristique_clean_s = caracteristique_clean
 }
 
 if (clone == 1){
+  resi_clean_mat[,2] =resi_clean
 	caracteristique_clean_c = caracteristique_clean
 }
 
@@ -473,6 +480,8 @@ if (clone == 1){
 ###############################################################
 ###### !! Fin de la différence entre clone =0 et clone =1 !! ##
 ###############################################################
+  
+
 
 Vminuslike_tot=function (alpha_s,beta1_s,beta2_s,alpha_c,beta1_c,beta2_c)
         {
@@ -510,7 +519,7 @@ Vminuslikev_tot=function (X)
 	
 	}
 
-      papa=mle(Vminuslike_tot,start=list(alpha_s=init[1],beta1_s=init[2],beta2_s=init[3],alpha_c=init[1],beta1_c=init[2],beta2_c=init[3]),method="BFGS")
+  papa=mle(Vminuslike_tot,start=list(alpha_s=init[1],beta1_s=init[2],beta2_s=init[3],alpha_c=init[1],beta1_c=init[2],beta2_c=init[3]),method="BFGS")
 
 	mama = optim(c(init,init), Vminuslikev)
 
