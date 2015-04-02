@@ -37,7 +37,7 @@ return (b)
 
 
 ##################### CHOIX CLONE/SELLER#################################
-clone = 0 #On met 0 pour évaluer les seller et 1 pour évaluer les clones
+clone = 1 #On met 0 pour évaluer les seller et 1 pour évaluer les clones
 #########################################################################
 
 
@@ -45,8 +45,8 @@ clone = 0 #On met 0 pour évaluer les seller et 1 pour évaluer les clones
 #################### CHOIX PSI ##################
 
 ######## PSI1 #######
-expo = 1
-step = 0
+expo = 0
+step = 1
 #####################
 
 ##################################################
@@ -111,6 +111,34 @@ Psi1_step = function(d,beta,step1,step2,step3,step4){
 		return ( Psi1_step_v(d,beta,c(step1,step2,step3,step4) ))
 
 }
+  
+  
+#####################################################
+## Pour Psi0, on considère égalemetn des polynomes ##
+#####################################################
+  
+poly3 = function(x,a0,a1,a2,a3){
+  x_pui = c(1,x,x^2,x^3)
+  a = c(a0,a1,a2,a3)
+  res = crossprod(x_pui,a)
+  
+}  
+  
+poly2 = function(x,a0,a1,a2){
+  x_pui = c(1,x,x^2)
+  a = c(a0,a1,a2)
+  res = crossprod(x_pui,a)
+  
+}  
+  
+poly1 = function(x,a0,a1){
+  x_pui = c(1,x)
+  a = c(a0,a1)
+  res = crossprod(x_pui,a)
+  
+}
+  
+  
 
 if (expo ==1){
 	Psi1 = Psi1_exp
@@ -374,7 +402,8 @@ resi_quartiles = c(summary(resi)[[2]],summary(resi)[[3]],summary(resi)[[5]])
 
 nb_carac =2
 
-x1 = T1sex-1
+#on recode le sexe entre 0 et 1 et on obtien homme =1 et femme =0
+x1 = 2-T1sex
 x2_seller = age_at_viager/10
 x2_clone = age_at_viager_clone/10
 

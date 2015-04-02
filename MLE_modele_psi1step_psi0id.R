@@ -1,4 +1,4 @@
-#########################################################
+-#########################################################
 ## On va estimer par MLE les coeff présents pour ########
 ##                PSI0 = Identité                ########
 ##                PSI1 = PSI1_step               ########
@@ -172,7 +172,7 @@ summary(maxl)
 ##############################################
 
 
-nbupdate = 3
+nbupdate = 2
 while ((nbupdate>0) ){
   
 init[1] = maxl$estimate[[1]]
@@ -194,3 +194,13 @@ nbupdate = nbupdate -1
 }
 
 summary(maxl)
+#vcov(maxl)
+confint(maxl)
+
+
+A = matrix(c(0,0,1,1,1,1,0,0,1,1,1,1),1,12)
+B = 0
+
+maxl = maxLik(logLik = fun, start = c(beta1_s=init[1],beta2_s=init[2],step1_s=init[3],step2_s=init[4],step3_s=init[5],step4_s=init[6],beta1_c=init[7],beta2_c=init[8],step1_c=init[9],step2_c=init[10],step3_c=init[11],step4_c=init[12]),method="NM",constraints = list(ineqA=A,ineqB=B))
+
+
