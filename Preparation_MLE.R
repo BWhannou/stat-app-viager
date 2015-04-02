@@ -1,5 +1,6 @@
   library(stats4)  # mle
   library(pracma)  # fsolve
+  library(maxLik)  #autre package pour mle de 2011
  t_end=20000
     NbExp=10
     NbInd=500
@@ -36,7 +37,7 @@ return (b)
 
 
 ##################### CHOIX CLONE/SELLER#################################
-clone = 0 #On met 0 pour évaluer les seller et 1 pour évaluer les clones
+clone = 1 #On met 0 pour évaluer les seller et 1 pour évaluer les clones
 #########################################################################
 
 
@@ -44,8 +45,8 @@ clone = 0 #On met 0 pour évaluer les seller et 1 pour évaluer les clones
 #################### CHOIX PSI ##################
 
 ######## PSI1 #######
-expo = 1
-step = 0
+expo = 0
+step = 1
 #####################
 
 ##################################################
@@ -107,7 +108,7 @@ Psi1_step_v = function(d,beta,k=0,step){   #,resi_quartiles){
 
 Psi1_step = function(d,alpha,beta,step1,step2,step3,step4){
 
-		return ( Psi1_step_v(d,beta,c(step1,step2,step3,step4) )
+		return ( Psi1_step_v(d,beta,c(step1,step2,step3,step4) ))
 
 }
 
@@ -463,16 +464,17 @@ Vminuslikev=function (X)
 
 #il faut avoir les caracteristiques sous deux matrices différentes pour clones et sellers
 #caracteristique_clean_s et #caracteristique_clean_c
-resi_clean_mat = matrix(0,length(resi_clean),2) #on va stocker dansl a première colonne les resi_clean seller et dans la 2 les resi_clean clone
-  
+
 if (clone == 0){
-  resi_clean_mat[,1] =resi_clean 
+  resi_clean_s=resi_clean 
 	caracteristique_clean_s = caracteristique_clean
+  contrat_clean_s = contrat_clean
 }
 
 if (clone == 1){
-  resi_clean_mat[,2] =resi_clean
+  resi_clean_c =resi_clean
 	caracteristique_clean_c = caracteristique_clean
+  contrat_clean_c =contrat_clean
 }
 
 
@@ -496,7 +498,7 @@ Vminuslikev_tot=function (X)
         {
 	X_s  = X[1:3]
 	X_c = X[4:6]
-	return (Vminuslike(X_s[1],X_s[2],X_s[3],X_c[1],X_c[2],X_c[3]))
+	return (Vminuslike_tot(X_s[1],X_s[2],X_s[3],X_c[1],X_c[2],X_c[3]))
 
       }
 

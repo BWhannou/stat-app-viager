@@ -11,15 +11,43 @@
 
 
 #on rédéfinit le point de départ de mle et optim 
-init=c(-10,-1/9,-4)
+init0=c(-10,-1/9,-4)
+init_tot=c(-10,-2,-5,-171,-2,-3) #j'ai limpression qu'il faut des trucs très très négatifs pour ne pas aller à l'infini
+
+init = c(init0,init0)
+
+
+#on indique si on souhaite procéder sur des sous-bases de la base initiale
+sous_base=0
+nbase=200
+
+
+############################################################################################
+##En cas de bug,on peut essayer de tirer des sous-bases de la base départ via une uniforme##
+############################################################################################
+if(sous_base==1){
+
+#on tire le numéro des individus à retenir
+a_tirer_s = floor(runif(nbase,0,length(contrat_clean_s)+1))
+a_tirer_c = floor(runif(nbase,0,length(contrat_clean_c)+1))
+
+resi_clean_s = resi_clean_s[a_tirer_s]
+resi_clean_c = resi_clean_c[a_tirer_c]
+
+caracteristique_clean_s = caracteristique_clean_s[a_tirer_s]
+caracteristique_clean_c = caracteristique_clean_c[a_tirer_c]
+
+contrat_clean_s = contrat_clean_s[a_tirer_s]
+contrat_clean_c = contrat_clean_c[a_tirer_c]
+}
 
 
 Vminuslike_tot=function (alpha_s,beta1_s,beta2_s,alpha_c,beta1_c,beta2_c)
 {
   beta_s=c(beta1_s,beta2_s)
   beta_c=c(beta1_c,beta2_c)
-  return (-log_like(alpha_s,beta_s,resi_clean_mat[,1],caracteristique_clean_s,contrat_clean)
-          - log_like(alpha_c, beta_c, resi_clean_mat[,2], caracteristique_clean_c, contrat_clean)
+  return (-log_like(alpha_s,beta_s,resi_clean_s,caracteristique_clean_s,contrat_clean_s)
+          - log_like(alpha_c, beta_c, resi_clean_c, caracteristique_clean_c, contrat_clean_c)
           )
 }
 
@@ -27,40 +55,55 @@ Vminuslikev_tot=function (X)
 {
   X_s  = X[1:3]
   X_c = X[4:6]
-  return (Vminuslike(X_s[1],X_s[2],X_s[3],X_c[1],X_c[2],X_c[3]))
+  return (Vminuslike_tot(X_s[1],X_s[2],X_s[3],X_c[1],X_c[2],X_c[3]))
   
 }
 
-
-
-papatry = try(mle(Vminuslike_tot,start=list(alpha_s=init[1],beta1_s=init[2],beta2_s=init[3],alpha_c=init[1],beta1_c=init[2],beta2_c=init[3]),method="BFGS"),silent = T)
+fun = function(X)
+{
+  X_s  = X[1:3]
+  X_c = X[4:6]
+  return (-Vminuslike_tot(X_s[1],X_s[2],X_s[3],X_c[1],X_c[2],X_c[3]))
+  
+}
+  
+papatry = try(mle(Vminuslike_tot,start=list(alpha_s=init[1],beta1_s=init[2],beta2_s=init[3],alpha_c=init[4],beta1_c=init[5],beta2_c=init[6]),method="BFGS"),silent = T)
 
 
 nbessais = 0
-nbessais_max = 20
+nbessais_max = 50
 
 while( (class(papatry)=="try-error") & (nbessais <=nbessais_max) ){
   
-  init[1] = init[1] + ((-1)^(nbessais))*0.1*(nbessais/3)
-  init[2] = init[2] + ((-1)^(nbessais))*0.05*(nbessais)
-  init[3] = init[3] + ((-1)^(nbessais))* 0.2*(nbessais/3)
+  init[1] = init[1] + ((-1)^(nbessais))*1*(nbessais/3)
+  init[2] = init[2] + ((-1)^(nbessais))*5*(nbessais)
+  init[3] = init[3] + ((-1)^(nbessais))* 2*(nbessais/3)
+  init[4] = init[4] + ((-1)^(nbessais))*1*(nbessais/3)
+  init[5] = init[5] + ((-1)^(nbessais))*5*(nbessais)
+  init[6] = init[6] + ((-1)^(nbessais))*2*(nbessais/3)
   
-  papatry = try(mle(Vminuslike_tot,start=list(alpha_s=init[1],beta1_s=init[2],beta2_s=init[3],alpha_c=init[1],beta1_c=init[2],beta2_c=init[3]),method="BFGS"),silent = T)
+  papatry = try(mle(Vminuslike_tot,start=list(alpha_s=init[1],beta1_s=init[2],beta2_s=init[3],alpha_c=init[4],beta1_c=init[5],beta2_c=init[6]),method="BFGS"),silent = T)
   nbessais = nbessais+1
   
 }
 
-papa=mle(Vminuslike_tot,start=list(alpha_s=init[1],beta1_s=init[2],beta2_s=init[3],alpha_c=init[1],beta1_c=init[2],beta2_c=init[3]),method="BFGS")
+papa=mle(Vminuslike_tot,start=list(alpha_s=init[1],beta1_s=init[2],beta2_s=init[3],alpha_c=init[4],beta1_c=init[5],beta2_c=init[6]),method="BFGS")
 
-mama = optim(c(init,init), Vminuslikev)
+mama = optim(init, Vminuslikev_tot)
 
 #on compare mle et optim en comparant la valeur de la log-like
-if(logLik(papa)>mama$value){
+if(-logLik(papa)<mama$value){
+  print("MLE meilleur qu'optim")
   
 }
 
+if(-logLik(papa)>=mama$value){
+  print("optim meilleur que MLE")
+}
 
-Vminuslike_tot(init[1],init[2],init[3],init[1],init[2],init[3])
+
+
+Vminuslike_tot(init[1],init[2],init[3],init[4],init[5],init[6])
 #log_like(init[1],init[2:3],resi_clean,caracteristique_clean,contrat_clean)
 
 
@@ -102,6 +145,10 @@ beta1estimm = c(estimlem[2],estimlem[5])
 beta2estimm = c(estimlem[3],estimlem[6])
 estimlem 
 
-#on ne stocke pas les résultats dans les mêmes variables suivant la valeur de clone
+#############################################
+## Autre méthode de MLE qui semble marcher ##
+## Le summary est plutot joli !##############
+#############################################
 
-
+maxl = maxLik(logLik = fun, start = c(alpha_s=init[1],beta1_s=init[2],beta2_s=init[3],alpha_c=init[4],beta1_c=init[5],beta2_c=init[6]),method="NM")
+summary(maxl)
