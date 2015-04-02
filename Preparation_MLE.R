@@ -37,7 +37,7 @@ return (b)
 
 
 ##################### CHOIX CLONE/SELLER#################################
-clone = 1 #On met 0 pour évaluer les seller et 1 pour évaluer les clones
+clone = 0 #On met 0 pour évaluer les seller et 1 pour évaluer les clones
 #########################################################################
 
 
@@ -63,11 +63,11 @@ Psi0 = function (x)
 
 
 
-Psi0_Tcheby=function(d,alpha,beta,n){
+Psi0_Tcheby=function(d,n){
 
 	vec = NULL
-	for (k in 1:floor(n/2)){
-		vec[k]= ((-1)^k)*(choose(n-k,k)) *(2*d)^(n-2*k)
+	for (k in 1:(floor(n/2)+1)){
+		vec[k]= ((-1)^(k-1)*(choose(n-k+1,k-1)) *(2*d)^(n-2*(k-1)))
 	}
 	return (sum(vec))
 	
@@ -82,7 +82,7 @@ Psi1_exp = function (d,alpha,beta,k=0)
 	}
 
 
-Psi1_step_v = function(d,beta,k=0,step){   #,resi_quartiles){
+Psi1_step_v = function(d,beta,step){   #,resi_quartiles){
 	
 	#resi_quartiles doit être un vecteur de taille 3 avec le 1er quartile, la médiane et le troisième quartile
 	#step doit être un vecteur de longueur 4 contenant les valeurs des "marches" de l'escalier
@@ -106,7 +106,7 @@ Psi1_step_v = function(d,beta,k=0,step){   #,resi_quartiles){
 
 }
 
-Psi1_step = function(d,alpha,beta,step1,step2,step3,step4){
+Psi1_step = function(d,beta,step1,step2,step3,step4){
 
 		return ( Psi1_step_v(d,beta,c(step1,step2,step3,step4) ))
 
@@ -203,7 +203,7 @@ lambda = function (d,x,t,beta,step1,step2,step3,step4)
 	}
 
 
-S=function(d,x,t,beta,k=0,step1,step2,step3,step4)
+S=function(d,x,t,beta,step1,step2,step3,step4)
 	{
 		f= function (x){
 			return (0.5*x^2)
@@ -235,7 +235,7 @@ S=function(d,x,t,beta,k=0,step1,step2,step3,step4)
 		
 	}
 
-log_S = function(d,x,t,beta,k=0,step1,step2,step3,step4){
+log_S = function(d,x,t,beta,step1,step2,step3,step4){
 		f= function (x){
 			return (0.5*x^2)
 		}
@@ -266,14 +266,14 @@ log_S = function(d,x,t,beta,k=0,step1,step2,step3,step4){
 
 }
 
-log_lambda = function(d,x,t,beta,k=0,step1,step2,step3,step4){
+log_lambda = function(d,x,t,beta,step1,step2,step3,step4){
 
 		res = (log(Psi0(t+d))+ log(Psi1(d,beta,step1,step2,step3,step4)) + crossprod(beta,x))
 		return (res)
 
 	}
 
-log_density = function (d,x,t,beta,k=0,step1,step2,step3,step4)
+log_density = function (d,x,t,beta,step1,step2,step3,step4)
 	{
 		res = log_lambda(d,x,t,beta,step1,step2,step3,step4) + log_S(d,x,t,beta,step1,step2,step3,step4)
 		return (res)
@@ -281,7 +281,7 @@ log_density = function (d,x,t,beta,k=0,step1,step2,step3,step4)
 
 
 
-log_like=function (beta,resi_, carac, contrat_, k=0,step1,step2,step3,step4)
+log_like=function (beta,resi_, carac, contrat_,step1,step2,step3,step4)
 {
 
 
