@@ -173,7 +173,7 @@ summary(maxl)
 
 
 nbupdate = 3
-while ((nbupdate>0) &){
+while ((nbupdate>0) ){
   
 init[1] = maxl$estimate[[1]]
 init[2] = maxl$estimate[[2]]
@@ -188,7 +188,9 @@ init[10] = maxl$estimate[[10]]
 init[11] = maxl$estimate[[11]]
 init[12] = maxl$estimate[[12]]
 maxl = maxLik(logLik = fun, start = c(beta1_s=init[1],beta2_s=init[2],step1_s=init[3],step2_s=init[4],step3_s=init[5],step4_s=init[6],beta1_c=init[7],beta2_c=init[8],step1_c=init[9],step2_c=init[10],step3_c=init[11],step4_c=init[12]),method="NM")
-summary(maxl)
+
 
 nbupdate = nbupdate -1
 }
+
+summary(maxl)

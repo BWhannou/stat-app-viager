@@ -152,3 +152,98 @@ estimlem
 
 maxl = maxLik(logLik = fun, start = c(alpha_s=init[1],beta1_s=init[2],beta2_s=init[3],alpha_c=init[4],beta1_c=init[5],beta2_c=init[6]),method="NM")
 summary(maxl)
+
+
+nbupdate = 5
+while ((nbupdate>0) ){
+  
+  init[1] = maxl$estimate[[1]]
+  init[2] = maxl$estimate[[2]]
+  init[3] = maxl$estimate[[3]]
+  init[4] = maxl$estimate[[4]]
+  init[5] = maxl$estimate[[5]]
+  init[6] = maxl$estimate[[6]]
+
+  maxl = maxLik(logLik = fun, start = c(alpha_s=init[1],beta1_s=init[2],beta2_s=init[3],alpha_c=init[4],beta1_c=init[5],beta2_c=init[6]),method="NM")
+  
+  
+  nbupdate = nbupdate -1
+}
+
+summary(maxl)
+
+papa=mle(Vminuslike_tot,start=list(alpha_s=init[1],beta1_s=init[2],beta2_s=init[3],alpha_c=init[4],beta1_c=init[5],beta2_c=init[6]),method="BFGS")
+summary(papa)
+
+for (i in 1:length(papa@coef)){
+  init[i] = papa@coef[[i]]
+}
+
+#on finit par maxLik pour avoir directement les test de significativité
+
+maxl = maxLik(logLik = fun, start = c(alpha_s=init[1],beta1_s=init[2],beta2_s=init[3],alpha_c=init[4],beta1_c=init[5],beta2_c=init[6]),method="NM")
+summary(maxl)
+vcov(maxl)
+confint(maxl)
+
+
+
+####################################################################
+## Tous les coeff sont significatifs!!!!!!!!!#######################
+####################################################################
+
+##############################################################
+## Il faut maintenant tester l'égalité seller/clone ##########
+##############################################################
+
+##D'après les auteurs du package on peut utiliser all.equal##
+##S'il ne renvoie pas TRUE, on peut consiérer que c'est différent##
+
+all.equal(maxl$estimate[[1]],maxl$estimate[[4]])
+all.equal(maxl$estimate[[2]],maxl$estimate[[5]])
+all.equal(maxl$estimate[[3]],maxl$estimate[[6]])
+
+##On essaie également un test similaire à celui d'économétrie pour tester l'égalité de deux coeff d'une regresssion linéaire##
+
+ttest1 = abs((maxl$estimate[[1]]-maxl$estimate[[4]])/sqrt(  vcov(maxl)[1,1]+vcov(maxl)[4,4] - 2*vcov(maxl)[1,4]  ))
+ttest2 = abs((maxl$estimate[[2]]-maxl$estimate[[5]])/sqrt(  vcov(maxl)[2,2]+vcov(maxl)[5,5] - 2*vcov(maxl)[2,5]  ))  
+ttest3 = abs((maxl$estimate[[3]]-maxl$estimate[[6]])/sqrt(  vcov(maxl)[3,3]+vcov(maxl)[6,6] - 2*vcov(maxl)[3,6]  ))
+
+## On se place au niveau alpha##
+alpha  = 0.05
+
+rejet = qnorm(1-alpha/2)
+
+
+if(ttest1>rejet){
+  print("##alpha seller !!!=!!! alpha clone##")
+  
+}
+
+if (ttest1<=rejet){
+  print("##alpha seller ~~~~~ alpha clone##")
+  
+}
+
+
+if(ttest2>rejet){
+  print("##beta1 seller !!!=!!! beta1 clone##")
+  
+}
+
+if (ttest2<=rejet){
+  print("##beta1 seller ~~~~~ beta1 clone##")
+  
+}
+
+if(ttest3>rejet){
+  print("##beta2 seller !!!=!!! beta2 clone##")
+  
+}
+
+if (ttest3<=rejet){
+  print("##beta2 seller ~~~~~ beta2 clone##")
+  
+}
+
+##On rejette toutes les égalités##

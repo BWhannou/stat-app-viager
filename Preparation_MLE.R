@@ -45,8 +45,8 @@ clone = 0 #On met 0 pour évaluer les seller et 1 pour évaluer les clones
 #################### CHOIX PSI ##################
 
 ######## PSI1 #######
-expo = 0
-step = 1
+expo = 1
+step = 0
 #####################
 
 ##################################################
@@ -485,127 +485,44 @@ if (clone == 1){
   
 
 
-Vminuslike_tot=function (alpha_s,beta1_s,beta2_s,alpha_c,beta1_c,beta2_c)
-        {
-            beta_s=c(beta1_s,beta2_s)
-		beta_c=c(beta1_c,beta2_c)
-            return (-log_like(alpha_s,beta_s,resi_clean[,1],caracteristique_clean_s,contrat_clean[,1])
-				- log_like(alpha_c, beta_c, resi_clean[,2], caracteristique_clean_c, contrat_clean[,2]
-				)
-        }
-
-Vminuslikev_tot=function (X)
-        {
-	X_s  = X[1:3]
-	X_c = X[4:6]
-	return (Vminuslike_tot(X_s[1],X_s[2],X_s[3],X_c[1],X_c[2],X_c[3]))
-
-      }
-
-
-
-	papatry = try(mle(Vminuslike_tot,start=list(alpha_s=init[1],beta1_s=init[2],beta2_s=init[3],alpha_c=init[1],beta1_c=init[2],beta2_c=init[3]),method="BFGS"),silent = T)
-	
-
-	nbessais = 0
-	nbessais_max = 20
-	
-	while( (class(papatry)=="try-error") & (nbessais <=nbessais_max) ){
-
-		init[1] = init[1] + ((-1)^(nbessais))*0.1*(nbessais/3)
-		init[2] = init[2] + ((-1)^(nbessais))*0.05*(nbessais)
-		init[3] = init[3] + ((-1)^(nbessais))* 0.2*(nbessais/3)
-	
-		papatry = try(mle(Vminuslike_tot,start=list(alpha_s=init[1],beta1_s=init[2],beta2_s=init[3],alpha_c=init[1],beta1_c=init[2],beta2_c=init[3]),method="BFGS"),silent = T)
-		nbessais = nbessais+1
-	
-	}
-
-  papa=mle(Vminuslike_tot,start=list(alpha_s=init[1],beta1_s=init[2],beta2_s=init[3],alpha_c=init[1],beta1_c=init[2],beta2_c=init[3]),method="BFGS")
-
-	mama = optim(c(init,init), Vminuslikev)
-
-
-Vminuslike_tot(init[1],init[2],init[3],init[1],init[2],init[3])
-#log_like(init[1],init[2:3],resi_clean,caracteristique_clean,contrat_clean)
-
-
-estimle = NULL
-        estimle[1]=papa@coef[[1]]
-        estimle[2]=papa@coef[[2]]
-        estimle[3]=papa@coef[[3]]
-
-varestim = NULL
-	varestim[1]=vcov(papa)[1,1]
-	varestim[2]=vcov(papa)[2,2]
-	varestim[3]=vcov(papa)[3,3]
-
-    alphaestim=(estimle[1])
-    beta1estim=(estimle[2])
-    beta2estim=(estimle[3])
-
-
-   alphaestim
-sqrt(varestim[1])
-
-    beta1estim
-sqrt(varestim[2])
-
-	beta2estim
-sqrt(varestim[3])
-
-
-	estimlem = mama$par
-alphaestimm = estimlem[1]
-beta1estimm = estimlem[2]
-beta2estimm = estimlem[3]
-estimlem 
+#Vminuslike_tot=function (alpha_s,beta1_s,beta2_s,alpha_c,beta1_c,beta2_c)
+ #       {
+  #          beta_s=c(beta1_s,beta2_s)
+	#	beta_c=c(beta1_c,beta2_c)
+   #         return (-log_like(alpha_s,beta_s,resi_clean[,1],caracteristique_clean_s,contrat_clean[,1])
+		#		- log_like(alpha_c, beta_c, resi_clean[,2], caracteristique_clean_c, contrat_clean[,2]
+		#		)
+     #   }
 
 #on ne stocke pas les résultats dans les mêmes variables suivant la valeur de clone
 
-if( clone ==1){
-	estimle_clone = estimle
-	estimlem_clone = estimlem
+#if( clone ==1){
+#	estimle_clone = estimle
+#	estimlem_clone = estimlem
+#	alpha_clone = mean(c(alphaestim,alphaestimm))
+#	beta1_clone = mean(c(beta1estim, beta1estimm))
+#	beta2_clone = mean(c(beta2estim, beta2estimm))
+#
+#	beta_clone = c(beta1_clone, beta2_clone)
+#	
+#	#cox_clone = coxph(formula = Surv(resi_clean) ~ contrat_clean + x1_clean + x2_clean, data = datamatrix_data)
 
-	alpha_clone = mean(c(alphaestim,alphaestimm))
-	beta1_clone = mean(c(beta1estim, beta1estimm))
-	beta2_clone = mean(c(beta2estim, beta2estimm))
+#}
 
-	beta_clone = c(beta1_clone, beta2_clone)
-	
-	#cox_clone = coxph(formula = Surv(resi_clean) ~ contrat_clean + x1_clean + x2_clean, data = datamatrix_data)
+#if ( clone ==0){
+#	estimle_seller = estimle
+#	estimlem_seller = estimlem
+#
+#	alpha_seller = mean(c(alphaestim,alphaestimm))
+#	beta1_seller = mean(c(beta1estim, beta1estimm))
+#	beta2_seller = mean(c(beta2estim, beta2estimm))
 
-}
-
-if ( clone ==0){
-	estimle_seller = estimle
-	estimlem_seller = estimlem
-
-	alpha_seller = mean(c(alphaestim,alphaestimm))
-	beta1_seller = mean(c(beta1estim, beta1estimm))
-	beta2_seller = mean(c(beta2estim, beta2estimm))
-
-	beta_seller = c(beta1_seller, beta2_seller)
-
+#	beta_seller = c(beta1_seller, beta2_seller)
+#
 	#cox_seller = coxph(formula = Surv(resi_clean) ~ contrat_clean + x1_clean + x2_clean, data = datamatrix_data)
 
-}
+#}
 
-invFdrpara=function(u,x,t,alpha,beta)
-        {	
-		f=function (d)
-		{
-			A=d^2*(t*(exp(alpha))*0.5+(d*exp(alpha))/3)
-
-			B=-exp(crossprod(beta , x))
-
-			return ((log(1-u)-A*B))
-		}
-
-		d=resou(f)
-            #d=fsolve(f,x0)$x
-		return (d)
-        }
 
 
 #kstest =NULL
