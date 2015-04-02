@@ -124,7 +124,7 @@ caracteristique[,2]=age
 caracteristique_c=caracteristique
 resi_c=resi
 ##############################################################
-################## la log-likelihood ###########################
+################## la log-likelihood #########################
 ##############################################################
 
 log_like=function (alpha,beta,resi_, carac, contrat_)
