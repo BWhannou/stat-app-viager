@@ -37,7 +37,7 @@ return (b)
 
 
 ##################### CHOIX CLONE/SELLER#################################
-clone = 1 #On met 0 pour évaluer les seller et 1 pour évaluer les clones
+clone = 0 #On met 0 pour évaluer les seller et 1 pour évaluer les clones
 #########################################################################
 
 
@@ -45,8 +45,8 @@ clone = 1 #On met 0 pour évaluer les seller et 1 pour évaluer les clones
 #################### CHOIX PSI ##################
 
 ######## PSI1 #######
-expo = 0
-step = 1
+expo = 1
+step = 0
 #####################
 
 ##################################################
@@ -88,19 +88,19 @@ Psi1_step_v = function(d,beta,step){   #,resi_quartiles){
 	#step doit être un vecteur de longueur 4 contenant les valeurs des "marches" de l'escalier
 
 	if(d<=resi_quartiles[1]){
-		return (step[1])
+		return (exp(step[1])
 	}
 
 	if( (d>resi_quartiles[1]) & (d<= resi_quartiles[2]) ){
-		return (step[2])
+		return (exp(step[2]))
 	}
 
 	if( (d>resi_quartiles[2]) & (d<= resi_quartiles[3]) ){
-		return (step[3])
+		return exp((step[3]))
 	}
 
 	if(d>resi_quartiles[3]){
-		return (step[4])
+		return exp((step[4]))
 	}
 
 
@@ -244,20 +244,20 @@ S=function(d,x,t,beta,step1,step2,step3,step4)
 		
 
 		if (d<= resi_quartiles[1]){
-			return ( exp(-step1*expint) )
+			return ( exp(-exp(step1)*expint) )
 		}
 
 
 		if ( (d> resi_quartiles[1]) &(d<= resi_quartiles[2]) ){
-			return (exp(- exp_b_x*(step1*f(resi_quartiles[1]) + step2*f(d-resi_quartiles[1]) )  ) )
+			return (exp(- exp_b_x*(exp(step1)*f(resi_quartiles[1]) + exp(step2)*f(d-resi_quartiles[1]) )  ) )
 		}
 
 		if ( (d> resi_quartiles[2]) &(d<= resi_quartiles[3]) ){
-			return (exp(- exp_b_x*(step1*f(resi_quartiles[1]) + step2*f(resi_quartiles[2]-resi_quartiles[1]) +step3*f(d-resi_quartiles[2]) )    ))
+			return (exp(- exp_b_x*(exp(step1)*f(resi_quartiles[1]) + exp(step2)*f(resi_quartiles[2]-resi_quartiles[1]) +exp(step3)*f(d-resi_quartiles[2]) )    ))
 		}
 
 		if (d> resi_quartiles[3]){
-			return (exp(- exp_b_x*(step1*f(resi_quartiles[1]) + step2*f(resi_quartiles[2]-resi_quartiles[1]) +step3*f(resi_quartiles[3]-resi_quartiles[2]) +step4*f(d-resi_quartiles[3]) ) ))
+			return (exp(- exp_b_x*(exp(step1)*f(resi_quartiles[1]) + exp(step2)*f(resi_quartiles[2]-resi_quartiles[1]) +exp(step3)*f(resi_quartiles[3]-resi_quartiles[2]) +exp(step4)*f(d-resi_quartiles[3]) ) ))
 		}
 
 		
@@ -275,20 +275,20 @@ log_S = function(d,x,t,beta,step1,step2,step3,step4){
 		
 
 		if (d<= resi_quartiles[1]){
-			return ( (-step1*expint) )
+			return ( (-exp(step1)*expint) )
 		}
 
 
 		if ( (d> resi_quartiles[1]) &(d<= resi_quartiles[2]) ){
-			return ((- exp_b_x*(step1*f(resi_quartiles[1]) + step2*f(d-resi_quartiles[1]) )  ) )
+			return ((- exp_b_x*(exp(step1)*f(resi_quartiles[1]) + exp(step2)*f(d-resi_quartiles[1]) )  ) )
 		}
 
 		if ( (d> resi_quartiles[2]) &(d<= resi_quartiles[3]) ){
-			return ((- exp_b_x*(step1*f(resi_quartiles[1]) + step2*f(resi_quartiles[2]-resi_quartiles[1]) +step3*f(d-resi_quartiles[2]) )    ))
+			return ((- exp_b_x*(exp(step1)*f(resi_quartiles[1]) + exp(step2)*f(resi_quartiles[2]-resi_quartiles[1]) +exp(step3)*f(d-resi_quartiles[2]) )    ))
 		}
 
 		if (d> resi_quartiles[3]){
-			return ((- exp_b_x*(step1*f(resi_quartiles[1]) + step2*f(resi_quartiles[2]-resi_quartiles[1]) +step3*f(resi_quartiles[3]-resi_quartiles[2]) +step4*f(d-resi_quartiles[3]) ) ))
+			return ((- exp_b_x*(exp(step1)*f(resi_quartiles[1]) + exp(step2)*f(resi_quartiles[2]-resi_quartiles[1]) +exp(step3)*f(resi_quartiles[3]-resi_quartiles[2]) +exp(step4)*f(d-resi_quartiles[3]) ) ))
 		}
 
 
