@@ -16,6 +16,7 @@ init_tot=c(-10,-2,-5,-171,-2,-3) #j'ai limpression qu'il faut des trucs très trè
 
 init = c(init0,init0)
 
+nb_param = length(init)
 
 #on indique si on souhaite procéder sur des sous-bases de la base initiale
 sous_base=0
@@ -108,35 +109,19 @@ Vminuslike_tot(init[1],init[2],init[3],init[4],init[5],init[6])
 
 
 estimle = NULL
-estimle[1]=papa@coef[[1]]
-estimle[2]=papa@coef[[2]]
-estimle[3]=papa@coef[[3]]
-estimle[4]=papa@coef[[4]]
-estimle[5]=papa@coef[[5]]
-estimle[6]=papa@coef[[6]]
-
-
 varestim = NULL
-varestim[1]=vcov(papa)[1,1]
-varestim[2]=vcov(papa)[2,2]
-varestim[3]=vcov(papa)[3,3]
-varestim[4]=vcov(papa)[4,4]
-varestim[5]=vcov(papa)[5,5]
-varestim[6]=vcov(papa)[6,6]
+
+
+for (i in 1:nb_param){}
+  estimle[i]=papa@coef[[i]]
+  varestim[1]=vcov(papa)[1,1]
+}
+
 
 alphaestim=c(estimle[1],estimle[4]) #alphaestim = alpha_s,alpha_c
 beta1estim=c(estimle[2],estimle[5])
 beta2estim=c(estimle[3],estimle[6])
 
-
-alphaestim
-sqrt(c(varestim[1],varestim[4]))
-
-beta1estim
-sqrt(c(varestim[2],estimle[5]))
-
-beta2estim
-sqrt(c(varestim[3],estimle[6]))
 
 
 estimlem = mama$par
@@ -157,12 +142,9 @@ summary(maxl)
 nbupdate = 5
 while ((nbupdate>0) ){
   
-  init[1] = maxl$estimate[[1]]
-  init[2] = maxl$estimate[[2]]
-  init[3] = maxl$estimate[[3]]
-  init[4] = maxl$estimate[[4]]
-  init[5] = maxl$estimate[[5]]
-  init[6] = maxl$estimate[[6]]
+  for (i in 1:nb_param){}
+    init[i] = maxl$estimate[[i]]
+  }
 
   maxl = maxLik(logLik = fun, start = c(alpha_s=init[1],beta1_s=init[2],beta2_s=init[3],alpha_c=init[4],beta1_c=init[5],beta2_c=init[6]),method="NM")
   
@@ -175,7 +157,7 @@ summary(maxl)
 papa=mle(Vminuslike_tot,start=list(alpha_s=init[1],beta1_s=init[2],beta2_s=init[3],alpha_c=init[4],beta1_c=init[5],beta2_c=init[6]),method="BFGS")
 summary(papa)
 
-for (i in 1:length(papa@coef)){
+for (i in 1:nb_param{
   init[i] = papa@coef[[i]]
 }
 
@@ -199,9 +181,9 @@ confint(maxl)
 ##D'après les auteurs du package on peut utiliser all.equal##
 ##S'il ne renvoie pas TRUE, on peut consiérer que c'est différent##
 
-all.equal(maxl$estimate[[1]],maxl$estimate[[4]])
-all.equal(maxl$estimate[[2]],maxl$estimate[[5]])
-all.equal(maxl$estimate[[3]],maxl$estimate[[6]])
+for(i in 1:(nb_param/2){
+  all.equal(maxl$estimate[[i]],maxl$estimate[[i+ (nb_param/2)]])
+}
 
 ##On essaie également un test similaire à celui d'économétrie pour tester l'égalité de deux coeff d'une regresssion linéaire##
 
@@ -246,4 +228,15 @@ if (ttest3<=rejet){
   
 }
 
-##On rejette toutes les égalités##
+
+############################################
+## SECTION : COMMENTAIRES DES RESULTATS   ##
+## BIEN INDIQUER LA DATE DU COMMENTAIRE ! ##
+############################################
+
+
+#####################################################
+##09/04; David##
+##On ne rejette pas beta1s=beta1c##
+##Tous les coeff sont siginificatifs et différents##
+#####################################################
