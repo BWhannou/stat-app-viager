@@ -99,3 +99,90 @@ beta2_c  0.10829390 -0.004262854 -0.013538314 -0.06941984  0.004455044  0.008679
  
 : On ne peut rejet l'égalité des coeff
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+**********************************ATTENTION************************************
+** Résultats précédents faux car mauvais code de S, log_S.... *****************
+*******************************************************************************
+
+Résultat initial
+
+
+--------------------------------------------
+Maximum Likelihood estimation
+Nelder-Mead maximisation, 83 iterations
+Return code 0: successful convergence 
+Log-Likelihood: -3806773 
+6  free parameters
+Estimates:
+          Estimate Std. error t value Pr(> t)    
+alpha_s -20.960934   0.026277  -797.7  <2e-16 ***
+beta1_s   4.839215   0.022640   213.7  <2e-16 ***
+beta2_s  -6.472088   0.001637 -3953.2  <2e-16 ***
+alpha_c  -0.049844         NA      NA      NA    
+beta1_c  -2.602050   0.003011  -864.2  <2e-16 ***
+beta2_c  -9.151138         NA      NA      NA    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+--------------------------------------------
+
+
+
+
+Avec 1 update de plus (c'est très long...)
+--------------------------------------------
+Maximum Likelihood estimation
+Nelder-Mead maximisation, 361 iterations
+Return code 0: successful convergence 
+Log-Likelihood: -11521 
+6  free parameters
+Estimates:
+          Estimate Std. error    t value Pr(> t)    
+alpha_s -7.754e+01  1.137e+00 -6.819e+01 < 2e-16 ***
+beta1_s  6.513e+00         NA         NA      NA    
+beta2_s  5.223e-01  1.943e-01  2.689e+00 0.00717 ** 
+alpha_c -9.222e+00  4.218e-04 -2.186e+04 < 2e-16 ***
+beta1_c -3.479e+00  4.064e-04 -8.561e+03 < 2e-16 ***
+beta2_c -1.006e+01  2.447e-05 -4.110e+05 < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+--------------------------------------------
+
+
+
+2 updates de plus..
+--------------------------------------------
+Maximum Likelihood estimation
+Nelder-Mead maximisation, 345 iterations
+Return code 0: successful convergence 
+Log-Likelihood: -11057.98 
+6  free parameters
+Estimates:
+         Estimate Std. error t value  Pr(> t)    
+alpha_s -72.81842    0.77323 -94.174  < 2e-16 ***
+beta1_s   0.42884    0.08716   4.920 8.65e-07 ***
+beta2_s   0.70194    0.09870   7.112 1.14e-12 ***
+alpha_c  -8.15373         NA      NA       NA    
+beta1_c  -4.30348         NA      NA       NA    
+beta2_c  -9.81210         NA      NA       NA    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+--------------------------------------------
+
+
+

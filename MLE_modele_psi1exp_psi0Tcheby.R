@@ -11,7 +11,7 @@
 #########################################################
 
 ## On définit le degré du polynôme de Tchebychev a priori
-n_Tcheby = 5 
+n_Tcheby = 5
 
 
 #on rédéfinit le point de départ de mle et optim 
