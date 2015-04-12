@@ -1,0 +1,105 @@
+
+-------------------------
+MODELE PSI1exp et PSI0Id
+-------------------------
+
+2 carac : t1 sex et age_at_viager/10
+
+ATTENTION : âge/10 pour avoir des valeurs finies
+sex : 1 = homme et se rapporte au beta1
+
+
+Résultats  (soit 5 ou 6 updates)*************************************
+
+--------------------------------------------
+Maximum Likelihood estimation
+Nelder-Mead maximisation, 247 iterations
+Return code 0: successful convergence 
+Log-Likelihood: -9569.826 
+6  free parameters
+Estimates:
+         Estimate Std. error t value  Pr(> t)    
+alpha_s -31.60941    0.51849 -60.964  < 2e-16 ***
+beta1_s   0.39620    0.09811   4.038 5.39e-05 ***
+beta2_s   0.76430    0.06529  11.706  < 2e-16 ***
+alpha_c -33.88486    0.45289 -74.820  < 2e-16 ***
+beta1_c   0.58159    0.09007   6.457 1.07e-10 ***
+beta2_c   1.15315    0.05713  20.186  < 2e-16 ***
+---
+
+****************************************************
+
+
+Résultats (avec 30 updates de plus)
+
+--------------------------------------------
+Maximum Likelihood estimation
+Nelder-Mead maximisation, 179 iterations
+Return code 0: successful convergence 
+Log-Likelihood: -9569.826 
+6  free parameters
+Estimates:
+         Estimate Std. error t value  Pr(> t)    
+alpha_s -31.60884    0.53488 -59.095  < 2e-16 ***
+beta1_s   0.39671    0.09696   4.091 4.29e-05 ***
+beta2_s   0.76425    0.06753  11.317  < 2e-16 ***
+alpha_c -33.88497    0.45684 -74.172  < 2e-16 ***
+beta1_c   0.58170    0.08957   6.494 8.34e-11 ***
+beta2_c   1.15324    0.05778  19.960  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+----
+
+
+> confint(maxl)
+              2.5 %      97.5 %
+alpha_s -32.6571816 -30.5604922
+beta1_s   0.2066663   0.5867524
+beta2_s   0.6318856   0.8966093
+alpha_c -34.7803616 -32.9895684
+beta1_c   0.4061441   0.7572481
+beta2_c   1.0399948   1.2664820
+> 
+
+
+
+> vcov(maxl)
+             alpha_s       beta1_s       beta2_s       alpha_c       beta1_c       beta2_c
+alpha_s  0.286096148 -1.101858e-02 -0.0358539564 -0.0725631428 -3.195052e-03  9.452428e-03
+beta1_s -0.011018583  9.401729e-03  0.0008636595  0.0004265127  1.877992e-05 -5.555961e-05
+beta2_s -0.035853956  8.636595e-04  0.0045606794  0.0092301454  4.064157e-04 -1.202364e-03
+alpha_c -0.072563143  4.265127e-04  0.0092301454  0.2087059039 -9.642439e-03 -2.617411e-02
+beta1_c -0.003195052  1.877992e-05  0.0004064157 -0.0096424387  8.022603e-03  7.852135e-04
+beta2_c  0.009452428 -5.555961e-05 -0.0012023636 -0.0261741087  7.852135e-04  3.338345e-03
+> 
+
+
+allequal (teste all.equal(alpha_s,alpha_c), etc...)
+[1] "Mean relative difference: 0.07200923"
+[2] "Mean relative difference: 0.4663029" 
+[3] "Mean relative difference: 0.5089856" 
+
+
+
+Code test égalité des coef
+
+
+> ttest1 = abs((maxl$estimate[[1]]-maxl$estimate[[4]])/sqrt(  vcov(maxl)[1,1]+vcov(maxl)[4,4] - 2*vcov(maxl)[1,4]  ))
+> ttest2 = abs((maxl$estimate[[2]]-maxl$estimate[[5]])/sqrt(  vcov(maxl)[2,2]+vcov(maxl)[5,5] - 2*vcov(maxl)[2,5]  ))  
+> ttest3 = abs((maxl$estimate[[3]]-maxl$estimate[[6]])/sqrt(  vcov(maxl)[3,3]+vcov(maxl)[6,6] - 2*vcov(maxl)[3,6]  ))
+> 
+> ## On se place au niveau alpha##
+> alpha  = 0.05
+> 
+> rejet = qnorm(1-alpha/2)
+
+
+
+"##alpha seller !!!=!!! alpha clone##"
+
+"##beta1 seller ~~~~~ beta1 clone##"
+
+"##beta2 seller !!!=!!! beta2 clone##"
+
+
+Légende : !!!=!!! indique rejet égalité

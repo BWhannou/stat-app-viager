@@ -45,8 +45,8 @@ clone = 0 #On met 0 pour évaluer les seller et 1 pour évaluer les clones
 #################### CHOIX PSI ##################
 
 ######## PSI1 #######
-expo = 1
-step = 0
+expo = 0
+step = 1
 #####################
 
 ##################################################
@@ -88,19 +88,19 @@ Psi1_step_v = function(d,beta,step){   #,resi_quartiles){
 	#step doit être un vecteur de longueur 4 contenant les valeurs des "marches" de l'escalier
 
 	if(d<=resi_quartiles[1]){
-		return (step[1])
+		return (exp(step[1]))
 	}
 
 	if( (d>resi_quartiles[1]) & (d<= resi_quartiles[2]) ){
-		return (step[2])
+		return (exp(step[2]))
 	}
 
 	if( (d>resi_quartiles[2]) & (d<= resi_quartiles[3]) ){
-		return (step[3])
+		return (exp((step[3])))
 	}
 
 	if(d>resi_quartiles[3]){
-		return (step[4])
+		return (exp((step[4])))
 	}
 
 
@@ -111,6 +111,34 @@ Psi1_step = function(d,beta,step1,step2,step3,step4){
 		return ( Psi1_step_v(d,beta,c(step1,step2,step3,step4) ))
 
 }
+  
+  
+#####################################################
+## Pour Psi0, on considère égalemetn des polynomes ##
+#####################################################
+  
+poly3 = function(x,a0,a1,a2,a3){
+  x_pui = c(1,x,x^2,x^3)
+  a = c(a0,a1,a2,a3)
+  res = crossprod(x_pui,a)
+  
+}  
+  
+poly2 = function(x,a0,a1,a2){
+  x_pui = c(1,x,x^2)
+  a = c(a0,a1,a2)
+  res = crossprod(x_pui,a)
+  
+}  
+  
+poly1 = function(x,a0,a1){
+  x_pui = c(1,x)
+  a = c(a0,a1)
+  res = crossprod(x_pui,a)
+  
+}
+  
+  
 
 if (expo ==1){
 	Psi1 = Psi1_exp
@@ -216,20 +244,20 @@ S=function(d,x,t,beta,step1,step2,step3,step4)
 		
 
 		if (d<= resi_quartiles[1]){
-			return ( exp(-step1*expint) )
+			return ( exp(-exp(step1)*expint) )
 		}
 
 
 		if ( (d> resi_quartiles[1]) &(d<= resi_quartiles[2]) ){
-			return (exp(- exp_b_x*(step1*f(resi_quartiles[1]) + step2*f(d-resi_quartiles[1]) )  ) )
+			return (exp(- exp_b_x*(exp(step1)*f(resi_quartiles[1]) + exp(step2)*f(d-resi_quartiles[1]) )  ) )
 		}
 
 		if ( (d> resi_quartiles[2]) &(d<= resi_quartiles[3]) ){
-			return (exp(- exp_b_x*(step1*f(resi_quartiles[1]) + step2*f(resi_quartiles[2]-resi_quartiles[1]) +step3*f(d-resi_quartiles[2]) )    ))
+			return (exp(- exp_b_x*(exp(step1)*f(resi_quartiles[1]) + exp(step2)*f(resi_quartiles[2]-resi_quartiles[1]) +exp(step3)*f(d-resi_quartiles[2]) )    ))
 		}
 
 		if (d> resi_quartiles[3]){
-			return (exp(- exp_b_x*(step1*f(resi_quartiles[1]) + step2*f(resi_quartiles[2]-resi_quartiles[1]) +step3*f(resi_quartiles[3]-resi_quartiles[2]) +step4*f(d-resi_quartiles[3]) ) ))
+			return (exp(- exp_b_x*(exp(step1)*f(resi_quartiles[1]) + exp(step2)*f(resi_quartiles[2]-resi_quartiles[1]) +exp(step3)*f(resi_quartiles[3]-resi_quartiles[2]) +exp(step4)*f(d-resi_quartiles[3]) ) ))
 		}
 
 		
@@ -247,20 +275,20 @@ log_S = function(d,x,t,beta,step1,step2,step3,step4){
 		
 
 		if (d<= resi_quartiles[1]){
-			return ( (-step1*expint) )
+			return ( (-exp(step1)*expint) )
 		}
 
 
 		if ( (d> resi_quartiles[1]) &(d<= resi_quartiles[2]) ){
-			return ((- exp_b_x*(step1*f(resi_quartiles[1]) + step2*f(d-resi_quartiles[1]) )  ) )
+			return ((- exp_b_x*(exp(step1)*f(resi_quartiles[1]) + exp(step2)*f(d-resi_quartiles[1]) )  ) )
 		}
 
 		if ( (d> resi_quartiles[2]) &(d<= resi_quartiles[3]) ){
-			return ((- exp_b_x*(step1*f(resi_quartiles[1]) + step2*f(resi_quartiles[2]-resi_quartiles[1]) +step3*f(d-resi_quartiles[2]) )    ))
+			return ((- exp_b_x*(exp(step1)*f(resi_quartiles[1]) + exp(step2)*f(resi_quartiles[2]-resi_quartiles[1]) +exp(step3)*f(d-resi_quartiles[2]) )    ))
 		}
 
 		if (d> resi_quartiles[3]){
-			return ((- exp_b_x*(step1*f(resi_quartiles[1]) + step2*f(resi_quartiles[2]-resi_quartiles[1]) +step3*f(resi_quartiles[3]-resi_quartiles[2]) +step4*f(d-resi_quartiles[3]) ) ))
+			return ((- exp_b_x*(exp(step1)*f(resi_quartiles[1]) + exp(step2)*f(resi_quartiles[2]-resi_quartiles[1]) +exp(step3)*f(resi_quartiles[3]-resi_quartiles[2]) +exp(step4)*f(d-resi_quartiles[3]) ) ))
 		}
 
 
@@ -368,13 +396,14 @@ if (clone ==0){
 	resi =resi_seller
 }
 
-#On va stocker les quartiles des resi selectionnées
+#On va stocker les quartiles des resi selectionnées : EDIT : fait à la fin après nettoyage et en tenant compte des clone et des sellers
 
-resi_quartiles = c(summary(resi)[[2]],summary(resi)[[3]],summary(resi)[[5]])
+#resi_quartiles = c(summary(resi)[[2]],summary(resi)[[3]],summary(resi)[[5]])
 
 nb_carac =2
 
-x1 = T1sex-1
+#on recode le sexe entre 0 et 1 et on obtien homme =1 et femme =0
+x1 = 2-T1sex
 x2_seller = age_at_viager/10
 x2_clone = age_at_viager_clone/10
 
@@ -465,20 +494,30 @@ Vminuslikev=function (X)
 #il faut avoir les caracteristiques sous deux matrices différentes pour clones et sellers
 #caracteristique_clean_s et #caracteristique_clean_c
 
+
+  
+  
 if (clone == 0){
   resi_clean_s=resi_clean 
 	caracteristique_clean_s = caracteristique_clean
   contrat_clean_s = contrat_clean
+  seller_done = 1
 }
 
 if (clone == 1){
   resi_clean_c =resi_clean
 	caracteristique_clean_c = caracteristique_clean
   contrat_clean_c =contrat_clean
+  clone_done =1
 }
 
-
-
+if((class(try(seller_done))!="try-error") &  (class(try(seller_done))!="try-error")){  #si seller_done et clone_done existent
+  if(seller_done + clone_done ==2){
+    resi_clean_tot = c(resi_clean_s, resi_clean_c)
+    resi_quartiles=   c(summary(resi_clean_tot)[[2]],summary(resi_clean_tot)[[3]],summary(resi_clean_tot)[[5]])
+  }
+}
+  
 ###############################################################
 ###### !! Fin de la différence entre clone =0 et clone =1 !! ##
 ###############################################################

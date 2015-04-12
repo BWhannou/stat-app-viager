@@ -9,13 +9,18 @@
 ## d'abord lancer Preparation_MLE avec step ==1     #####
 #########################################################
 
-
+################################################################
+## ATTENTION : les step ne sont plus les valeurs de l'escalier##
+## ce sont les exp(step) #######################################
+################################################################
 
 #on rédéfinit le point de départ de mle et optim 
 init0=c(-10,-1/9,-4)
 init_tot=abs(c(-5,-6,10,12,45,64,-4,-7,32,37,48,59)) #j'ai limpression qu'il faut des trucs très très négatifs pour ne pas aller à l'infini
 
 init = init_tot
+
+nb_param = length(init)
 
 #log_like=function (beta,resi_, carac, contrat_, k=0,step1,step2,step3,step4)
 
@@ -50,7 +55,7 @@ papatry = try(mle(Vminuslike_tot,start=list(beta1_s=init[1],beta2_s=init[2],step
 
 
 nbessais = 0
-nbessais_max = 50
+nbessais_max = 20
 
 while( (class(papatry)=="try-error") & (nbessais <=nbessais_max) ){
   
@@ -89,36 +94,18 @@ if(-logLik(papa)>=mama$value){
 
 
 estimle = NULL
-estimle[1]=papa@coef[[1]]
-estimle[2]=papa@coef[[2]]
-estimle[3]=papa@coef[[3]]
-estimle[4]=papa@coef[[4]]
-estimle[5]=papa@coef[[5]]
-estimle[6]=papa@coef[[6]]
-estimle[7]=papa@coef[[7]]
-estimle[8]=papa@coef[[8]]
-estimle[9]=papa@coef[[9]]
-estimle[10]=papa@coef[[10]]
-estimle[11]=papa@coef[[11]]
-estimle[12]=papa@coef[[12]]
-
-
-
-
-
 varestim = NULL
-varestim[1]=vcov(papa)[1,1]
-varestim[2]=vcov(papa)[2,2]
-varestim[3]=vcov(papa)[3,3]
-varestim[4]=vcov(papa)[4,4]
-varestim[5]=vcov(papa)[5,5]
-varestim[6]=vcov(papa)[6,6]
-varestim[7]=vcov(papa)[7,7]
-varestim[8]=vcov(papa)[8,8]
-varestim[9]=vcov(papa)[9,9]
-varestim[10]=vcov(papa)[10,10]
-varestim[11]=vcov(papa)[11,11]
-varestim[12]=vcov(papa)[12,12]
+
+
+for (i in 1:nb_param){
+  estimle[i]=papa@coef[[i]]
+  varestim[1]=vcov(papa)[1,1]
+}
+
+
+
+
+
 
 
 beta1estim = c(estimle[1],estimle[7])
@@ -172,7 +159,7 @@ summary(maxl)
 ##############################################
 
 
-nbupdate = 3
+nbupdate = 2
 while ((nbupdate>0) ){
   
 init[1] = maxl$estimate[[1]]
@@ -194,3 +181,103 @@ nbupdate = nbupdate -1
 }
 
 summary(maxl)
+#vcov(maxl)
+confint(maxl)
+
+#Maximisation sous contrainte linéaire Ax +B >=0
+
+#A = matrix(c(0,0,1,1,1,1,0,0,1,1,1,1),1,12)
+#B = 0
+
+#maxl = maxLik(logLik = fun, start = c(beta1_s=init[1],beta2_s=init[2],step1_s=init[3],step2_s=init[4],step3_s=init[5],step4_s=init[6],beta1_c=init[7],beta2_c=init[8],step1_c=init[9],step2_c=init[10],step3_c=init[11],step4_c=init[12]),method="NM",constraints = list(ineqA=A,ineqB=B))
+
+
+
+##############################################################
+## Il faut maintenant tester l'égalité seller/clone ##########
+##############################################################
+
+all.equal(maxl$estimate[[1]],maxl$estimate[[7]])
+all.equal(maxl$estimate[[2]],maxl$estimate[[8]])
+all.equal(maxl$estimate[[3]],maxl$estimate[[9]])
+all.equal(maxl$estimate[[4]],maxl$estimate[[10]])
+all.equal(maxl$estimate[[5]],maxl$estimate[[11]])
+all.equal(maxl$estimate[[6]],maxl$estimate[[12]])
+
+
+ttest1 = abs((maxl$estimate[[1]]-maxl$estimate[[7]])/sqrt(  vcov(maxl)[1,1]+vcov(maxl)[7,7] - 2*vcov(maxl)[1,7]  ))
+ttest2 = abs((maxl$estimate[[2]]-maxl$estimate[[8]])/sqrt(  vcov(maxl)[2,2]+vcov(maxl)[8,8] - 2*vcov(maxl)[2,8]  ))  
+ttest3 = abs((maxl$estimate[[3]]-maxl$estimate[[9]])/sqrt(  vcov(maxl)[3,3]+vcov(maxl)[9,9] - 2*vcov(maxl)[3,9]  ))
+ttest1 = abs((maxl$estimate[[4]]-maxl$estimate[[10]])/sqrt(  vcov(maxl)[4,4]+vcov(maxl)[10,10] - 2*vcov(maxl)[4,10]  ))
+ttest2 = abs((maxl$estimate[[5]]-maxl$estimate[[11]])/sqrt(  vcov(maxl)[5,5]+vcov(maxl)[11,11] - 2*vcov(maxl)[5,11]  ))  
+ttest3 = abs((maxl$estimate[[6]]-maxl$estimate[[12]])/sqrt(  vcov(maxl)[6,6]+vcov(maxl)[12,12] - 2*vcov(maxl)[6,12]  ))
+
+## On se place au niveau alpha##
+alpha  = 0.05
+
+rejet = qnorm(1-alpha/2)
+
+
+if(ttest1>rejet){
+  print("##beta1 seler !!!=!!! beta1 clone##")
+  
+}
+
+if (ttest1<=rejet){
+  print("##beta1 seller ~~~~~ beta1 clone##")
+  
+}
+
+
+
+if(ttest2>rejet){
+  print("##beta2 seller !!!=!!! beta2 clone##")
+  
+}
+
+if (ttest2<=rejet){
+  print("##beta2 seller ~~~~~ beta2 clone##")
+  
+}
+
+
+if(ttest3>rejet){
+  print("##step1 seller !!!=!!! step1 clone##")
+  
+}
+
+if (ttest3<=rejet){
+  print("##step1 seller ~~~~~ step1 clone##")
+  
+}
+
+
+if(ttest4>rejet){
+  print("##beta1 seller !!!=!!! beta1 clone##")
+  
+}
+
+if (ttest4<=rejet){
+  print("##step2 seller ~~~~~ step2 clone##")
+  
+}
+
+if(ttest5>rejet){
+  print("##step3 seller !!!=!!! step3 clone##")
+  
+}
+
+if (ttest5<=rejet){
+  print("##step3 seller ~~~~~ step3 clone##")
+  
+}
+
+if(ttest6>rejet){
+  print("##step4 seller !!!=!!! step4 clone##")
+  
+}
+
+if (ttest6<=rejet){
+  print("##step4 seller ~~~~~ step4 clone##")
+  
+}
