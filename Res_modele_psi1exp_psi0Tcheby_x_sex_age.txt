@@ -5,6 +5,12 @@ MODELE : PSI1exp, PSI0Tcheby, x = sex,age_atviager/10
 
 n_Tcheby = 5
 
+***********************************************************************
+ATTENTION - Ces résultats sont surement faux (erreur dans S et log_S)
+***********************************************************************
+
+
+
 Resultats init de maxl
 --------------------------------------------
 Maximum Likelihood estimation
@@ -99,3 +105,135 @@ beta2_c  0.10829390 -0.004262854 -0.013538314 -0.06941984  0.004455044  0.008679
  
 : On ne peut rejet l'égalité des coeff
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+**********************************ATTENTION************************************
+** Résultats précédents faux car mauvais code de S, log_S.... *****************
+*******************************************************************************
+
+Résultat initial
+
+
+--------------------------------------------
+Maximum Likelihood estimation
+Nelder-Mead maximisation, 83 iterations
+Return code 0: successful convergence 
+Log-Likelihood: -3806773 
+6  free parameters
+Estimates:
+          Estimate Std. error t value Pr(> t)    
+alpha_s -20.960934   0.026277  -797.7  <2e-16 ***
+beta1_s   4.839215   0.022640   213.7  <2e-16 ***
+beta2_s  -6.472088   0.001637 -3953.2  <2e-16 ***
+alpha_c  -0.049844         NA      NA      NA    
+beta1_c  -2.602050   0.003011  -864.2  <2e-16 ***
+beta2_c  -9.151138         NA      NA      NA    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+--------------------------------------------
+
+
+
+
+Avec 1 update de plus (c'est très long...)
+--------------------------------------------
+Maximum Likelihood estimation
+Nelder-Mead maximisation, 361 iterations
+Return code 0: successful convergence 
+Log-Likelihood: -11521 
+6  free parameters
+Estimates:
+          Estimate Std. error    t value Pr(> t)    
+alpha_s -7.754e+01  1.137e+00 -6.819e+01 < 2e-16 ***
+beta1_s  6.513e+00         NA         NA      NA    
+beta2_s  5.223e-01  1.943e-01  2.689e+00 0.00717 ** 
+alpha_c -9.222e+00  4.218e-04 -2.186e+04 < 2e-16 ***
+beta1_c -3.479e+00  4.064e-04 -8.561e+03 < 2e-16 ***
+beta2_c -1.006e+01  2.447e-05 -4.110e+05 < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+--------------------------------------------
+
+
+
+2 updates de plus..
+--------------------------------------------
+Maximum Likelihood estimation
+Nelder-Mead maximisation, 345 iterations
+Return code 0: successful convergence 
+Log-Likelihood: -11057.98 
+6  free parameters
+Estimates:
+         Estimate Std. error t value  Pr(> t)    
+alpha_s -72.81842    0.77323 -94.174  < 2e-16 ***
+beta1_s   0.42884    0.08716   4.920 8.65e-07 ***
+beta2_s   0.70194    0.09870   7.112 1.14e-12 ***
+alpha_c  -8.15373         NA      NA       NA    
+beta1_c  -4.30348         NA      NA       NA    
+beta2_c  -9.81210         NA      NA       NA    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+--------------------------------------------
+
+30 updates plus tard, magie!
+
+--------------------------------------------
+Maximum Likelihood estimation
+Nelder-Mead maximisation, 177 iterations
+Return code 0: successful convergence 
+Log-Likelihood: -9517.853 
+6  free parameters
+Estimates:
+         Estimate Std. error  t value  Pr(> t)    
+alpha_s -72.36323    0.82878  -87.313  < 2e-16 ***
+beta1_s   0.41414    0.08696    4.763 1.91e-06 ***
+beta2_s   0.64340    0.10638    6.048 1.47e-09 ***
+alpha_c -74.40580    0.62056 -119.901  < 2e-16 ***
+beta1_c   0.65855    0.08648    7.615 2.64e-14 ***
+beta2_c   1.05014    0.07926   13.250  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+--------------------------------------------
+
+
+ confint(maxl)
+              2.5 %      97.5 %
+alpha_s -73.9876095 -70.7388439
+beta1_s   0.2437068   0.5845681
+beta2_s   0.4348950   0.8519028
+alpha_c -75.6220750 -73.1895313
+beta1_c   0.4890441   0.8280530
+beta2_c   0.8948000   1.2054754
+
+vcov(maxl)
+
+            alpha_s       beta1_s       beta2_s     alpha_c      beta1_c      beta2_c
+alpha_s  0.68687951 -0.0087813103 -0.0879567830  0.00000000  0.000000000  0.000000000
+beta1_s -0.00878131  0.0075613476  0.0007120835  0.00000000  0.000000000  0.000000000
+beta2_s -0.08795678  0.0007120835  0.0113170222  0.00000000  0.000000000  0.000000000
+alpha_c  0.00000000  0.0000000000  0.0000000000  0.38509256 -0.011613108 -0.048981549
+beta1_c  0.00000000  0.0000000000  0.0000000000 -0.01161311  0.007479388  0.001089465
+beta2_c  0.00000000  0.0000000000  0.0000000000 -0.04898155  0.001089465  0.006281414
+
+
+> allequal
+[1] "Mean relative difference: 0.02822672" "Mean relative difference: 0.590169"   "Mean relative difference: 0.6321721" 
+
+
+> ttest>rejet
+[1] TRUE TRUE TRUE

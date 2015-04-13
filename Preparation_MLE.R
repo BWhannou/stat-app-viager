@@ -35,20 +35,34 @@ while((abs(a-b))>(10^-5)){
 return (b)
 }
 
-
+############ CHOIX CARACTERISTIQUES ########################################
+carac_sup = 1 #1 pour lancer le programme avec sans ajout de carac, 0 sinon
+nb_carac_sup = 1
+############################################################################
+  
+  
 ##################### CHOIX CLONE/SELLER#################################
-clone = 0 #On met 0 pour évaluer les seller et 1 pour évaluer les clones
+clone = 1 #On met 0 pour évaluer les seller et 1 pour évaluer les clones
 #########################################################################
-
 
 
 #################### CHOIX PSI ##################
 
 ######## PSI1 #######
-expo = 0
-step = 1
+expo = 1
+step = 0
 #####################
 
+######## PSI0 ##########
+##Par déafaut, Pis0 = ID
+pol1 = 0
+pol2 = 0
+pol3 = 0
+Tcheby = 1
+########################
+  
+  
+  
 ##################################################
 
 
@@ -114,7 +128,7 @@ Psi1_step = function(d,beta,step1,step2,step3,step4){
   
   
 #####################################################
-## Pour Psi0, on considère égalemetn des polynomes ##
+## Pour Psi0, on considère également des polynomes ##
 #####################################################
   
 poly3 = function(x,a0,a1,a2,a3){
@@ -138,7 +152,7 @@ poly1 = function(x,a0,a1){
   
 }
   
-  
+#############AFFECTATION PSI1###################
 
 if (expo ==1){
 	Psi1 = Psi1_exp
@@ -148,7 +162,34 @@ if (step ==1){
 	Psi1 = Psi1_step
 }
 
-if (expo==1){
+##################################################
+  
+  
+  
+###########AFFECTATION PSI0#######################
+  
+if(pol1 == 1){
+  Psi0= poly1
+}
+  
+if(pol2 == 1){
+  Psi0= poly2
+}
+  
+if(pol3 == 1){
+  Psi0= poly3
+}
+  
+if(Tcheby == 1){
+  Psi0 = Psi0_Tcheby
+}  
+##################################################
+  
+##########################################
+## Modèle PSIexp, PSi0ID                ##
+##########################################
+  
+if ((expo==1)&(sum(pol1,pol2,pol3,Tcheby)==0)){
 
 lambda = function (d,x,t,alpha,beta)
 	{
@@ -219,9 +260,187 @@ log_like=function (alpha,beta,resi_, carac, contrat_, k=0)
 }
 
 
-} #Fin du if Psi1 == Psi1_exp
+} #Fin du if Psi1 == Psi1_exp, Psi0=Id
 
 
+##########################################
+## Modèle PSIexp, PSi0Tcheby            ##
+##########################################
+
+#On note n_Tcheby le degré du polynôme de Tchebychev  
+  
+  
+if ((expo==1)&(sum(pol1,pol2,pol3)==0)&(Tcheby==1)){
+  
+  lambda = function (d,x,t,alpha,beta)
+  {
+    res = Psi0(t+d,n_Tcheby) * Psi1(d,alpha,beta) * exp(crossprod(beta , x))
+    return (res)
+  }
+  
+  
+  S=function(d,x,t,alpha,beta,k=0)
+  {
+    ## On prend la forme explicite de l'intégrale qu'on calcule en ayant développé par le binôme de Newton le (t+d)^(n-2k)
+    
+    exp_bx_a = exp(crossprod(beta,x)+alpha)
+    somme = 0
+    for (k in 0:floor(n_Tcheby/2)){
+      ak= NULL
+      for (l in 0:(n_Tcheby-2*k)){
+        nouv = (choose(n_Tcheby-2*k,l))*(t^(n_Tcheby-2*k-l))*((1/(l+2))*(d^(l+2)))
+        ak = c(ak,  ((-1)^k)*(choose(n_Tcheby-k,k))*(2^(n_Tcheby-2*k))*nouv)        
+      }
+      somme = somme + sum(ak)
+    }
+    
+    res = exp_bx_a *somme
+    return (exp(-res))
+  }
+  
+  log_S = function(d,x,t,alpha,beta,k=0){
+    
+    exp_bx_a = exp(crossprod(beta,x)+alpha)
+    somme = 0
+    for (k in 0:(floor(n_Tcheby/2))){
+      ak= NULL
+      for (l in 0:(n_Tcheby-2*k)){
+        nouv = (choose(n_Tcheby-2*k,l))*(t^(n_Tcheby-2*k-l))*((1/(l+2))*(d^(l+2)))
+        ak = c(ak,  ((-1)^k)*(choose(n_Tcheby-k,k))*(2^(n_Tcheby-2*k))*nouv)        
+      }
+      somme = somme + sum(ak)
+      
+    }
+    
+    res = exp_bx_a*somme
+    return (-res)
+    
+  }
+  
+  log_lambda = function(d,x,t,alpha,beta,k=0){
+    
+    res = (log(Psi0(t+d,n_Tcheby))+ log(Psi1(d,alpha,beta)) + crossprod(beta,x))
+    return (res)
+    
+  }
+  
+  log_density = function (d,x,t,alpha,beta,k=0)
+  {
+    res = log_lambda(d,x,t,alpha,beta) + log_S(d,x,t,alpha,beta)
+    return (res)
+  }
+  
+  
+  
+  log_like=function (alpha,beta,resi_, carac, contrat_, k=0)
+  {
+    
+    
+    ###############################################################
+    ############# contribution du seller
+    
+    logcontribution=function(d,x,t)
+    {
+      if (abs(log_S(t_end-t,x,t,alpha,beta))>log(10^-7)){
+        return(log_density(d,x,t,alpha,beta)-log(1-S(t_end-t,x,t,alpha,beta)))
+      }
+      else
+      {
+        return (log_density(d,x,t,alpha,beta)+S(t_end-t,x,t,alpha,beta))
+      }
+    }
+    contrib=NULL
+    for (i in 1:length(contrat_))
+    {
+      contrib[i]=logcontribution(resi_[i],carac[i,],contrat_[i])
+    }
+    
+    
+    return (sum(contrib,na.rm=TRUE))	
+    
+    
+  }
+  
+  
+} #Fin du if Psi1 == Psi1_exp, Psi0=Tcheby
+
+  
+if ((expo==1)&(pol1==1)){
+  
+  lambda = function (d,x,t,alpha,beta)
+  {
+    res = Psi0(t+d) * Psi1(d,alpha,beta) * exp(crossprod(beta , x))
+    return (res)
+  }
+  
+  
+  S=function(d,x,t,alpha,beta,k=0)
+  {
+    integral = exp(alpha[k+1])*d*d*(0.5*t+(1/3)*d)
+    expint = exp(crossprod(beta , x)) * integral
+    res = exp(-expint)
+    return (res)
+  }
+  
+  log_S = function(d,x,t,alpha,beta,k=0){
+    
+    integral = exp(alpha[k+1])*d*d*(0.5*t+(1/3)*d)
+    expint = exp(crossprod(beta , x)) * integral
+    res = (-expint)
+    return (res)
+    
+  }
+  
+  log_lambda = function(d,x,t,alpha,beta,k=0){
+    
+    res = (log(Psi0(t+d))+ log(Psi1(d,alpha,beta)) + crossprod(beta,x))
+    return (res)
+    
+  }
+  
+  log_density = function (d,x,t,alpha,beta,k=0)
+  {
+    res = log_lambda(d,x,t,alpha,beta) + log_S(d,x,t,alpha,beta)
+    return (res)
+  }
+  
+  
+  
+  log_like=function (alpha,beta,resi_, carac, contrat_, k=0)
+  {
+    
+    
+    ###############################################################
+    ############# contribution du seller
+    
+    logcontribution=function(d,x,t)
+    {
+      if (abs(log_S(t_end-t,x,t,alpha,beta))>log(10^-7)){
+        return(log_density(d,x,t,alpha,beta)-log(1-S(t_end-t,x,t,alpha,beta)))
+      }
+      else
+      {
+        return (log_density(d,x,t,alpha,beta)+S(t_end-t,x,t,alpha,beta))
+      }
+    }
+    contrib=NULL
+    for (i in 1:length(contrat_))
+    {
+      contrib[i]=logcontribution(resi_[i],carac[i,],contrat_[i])
+    }
+    
+    
+    return (sum(contrib,na.rm=TRUE))	
+    
+    
+  }
+  
+  
+} #Fin du if Psi1 == Psi1_exp, Psi0= poly1
+
+  
+  
+  
 if (step==1){
 
 lambda = function (d,x,t,beta,step1,step2,step3,step4)
@@ -400,9 +619,9 @@ if (clone ==0){
 
 #resi_quartiles = c(summary(resi)[[2]],summary(resi)[[3]],summary(resi)[[5]])
 
-nb_carac =2
+nb_carac =2+nb_carac_sup
 
-#on recode le sexe entre 0 et 1 et on obtien homme =1 et femme =0
+#on recode le sexe entre 0 et 1 et on obtient homme =1 et femme =0
 x1 = 2-T1sex
 x2_seller = age_at_viager/10
 x2_clone = age_at_viager_clone/10
@@ -413,11 +632,33 @@ if (clone ==0){
 	x2 = x2_seller
 }
 
+if(carac_sup ==1){
+  #On a appelé carac_a_raj la liste des caractéristiques à rajouter
+  
+  ###########TRAITEMENT A LA MAIN###################
+  x3 = Ind_Region_birth
+  
+}  
+  
 #Ces deux caractéristiques ont même longueur
-
+if (carac_sup==0){
 caracteristique = matrix(0,length(x1),nb_carac)
 caracteristique[,1] = x1
 caracteristique[,2] = x2
+}
+  
+  
+if(carac_sup==1){
+
+  #x3 et x1 ont même longueur
+  
+  caracteristique = matrix(0,length(x1),nb_carac)
+  caracteristique[,1] = x1
+  caracteristique[,2] = x2
+  caracteristique[,3]= x3
+
+  
+}
 
 contrat = (datecontrat)
 
@@ -466,6 +707,8 @@ for (k in 1:  size(datamatrix)[1]){
 
 n_datamatrixclean = size(datamatrix)[1]
 
+if(carac_sup==0){
+  
 resi_clean = datamatrix[,1]
 x1_clean = datamatrix[,2]
 x2_clean = datamatrix[,3]
@@ -476,8 +719,25 @@ caracteristique_clean[,1] = x1_clean
 caracteristique_clean[,2] = x2_clean
 
 datamatrix_data = data.frame(resi_clean,contrat_clean,x1_clean,x2_clean)
+}
 
-
+if(carac_sup==0){
+  
+  resi_clean = datamatrix[,1]
+  x1_clean = datamatrix[,2]
+  x2_clean = datamatrix[,3]
+  x3_clean = datamatrix[,4]
+  contrat_clean = datamatrix[,5]
+  
+  caracteristique_clean = matrix(0,length(x1_clean),nb_carac)
+  caracteristique_clean[,1] = x1_clean
+  caracteristique_clean[,2] = x2_clean
+  caracteristique_clean[,3] = x3_clean
+    
+  datamatrix_data = data.frame(resi_clean,contrat_clean,x1_clean,x2_clean,x3_clean)
+}
+  
+  
 Vminuslike=function (alpha,beta1,beta2)
         {
             beta=c(beta1,beta2)
@@ -511,7 +771,7 @@ if (clone == 1){
   clone_done =1
 }
 
-if((class(try(seller_done))!="try-error") &  (class(try(seller_done))!="try-error")){  #si seller_done et clone_done existent
+if((class(try(seller_done))!="try-error") &  (class(try(clone_done))!="try-error")){  #si seller_done et clone_done existent
   if(seller_done + clone_done ==2){
     resi_clean_tot = c(resi_clean_s, resi_clean_c)
     resi_quartiles=   c(summary(resi_clean_tot)[[2]],summary(resi_clean_tot)[[3]],summary(resi_clean_tot)[[5]])
