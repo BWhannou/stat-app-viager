@@ -7,7 +7,7 @@ papa=NULL
 ################# CHARGEMENT DES DONNEES #####################
 ##############################################################
 library(foreign)
-dataset2 = read.dta("//paradis/eleves/BWHANNOU/Bureau/stat'app/avecydeathmeandep.dta")
+dataset2 = read.dta("C:/Users/Brian/Desktop/statapp/avecydeathmeandep.dta")
 
 ##############################################################
 ################## OBSERVATION DES DONNEES ###################
@@ -86,7 +86,7 @@ newdata=data.frame(residu=resi,age,sex,contrat)
 
 
 caracteristique=matrix(data=NA,nrow=length(sex),ncol=2)
-caracteristique[,1]=sex
+caracteristique[,1]=sex-1
 caracteristique[,2]=age
 
 caracteristique_s=caracteristique
@@ -118,7 +118,7 @@ newdata=data.frame(residu=resi,age,sex,contrat)
 
 
 caracteristique=matrix(data=NA,nrow=length(sex),ncol=2)
-caracteristique[,1]=sex
+caracteristique[,1]=sex-1
 caracteristique[,2]=age
 
 caracteristique_c=caracteristique
