@@ -707,6 +707,8 @@ for (k in 1:  size(datamatrix)[1]){
 
 n_datamatrixclean = size(datamatrix)[1]
 
+if(carac_sup==0){
+  
 resi_clean = datamatrix[,1]
 x1_clean = datamatrix[,2]
 x2_clean = datamatrix[,3]
@@ -717,8 +719,25 @@ caracteristique_clean[,1] = x1_clean
 caracteristique_clean[,2] = x2_clean
 
 datamatrix_data = data.frame(resi_clean,contrat_clean,x1_clean,x2_clean)
+}
 
-
+if(carac_sup==0){
+  
+  resi_clean = datamatrix[,1]
+  x1_clean = datamatrix[,2]
+  x2_clean = datamatrix[,3]
+  x3_clean = datamatrix[,4]
+  contrat_clean = datamatrix[,5]
+  
+  caracteristique_clean = matrix(0,length(x1_clean),nb_carac)
+  caracteristique_clean[,1] = x1_clean
+  caracteristique_clean[,2] = x2_clean
+  caracteristique_clean[,3] = x3_clean
+    
+  datamatrix_data = data.frame(resi_clean,contrat_clean,x1_clean,x2_clean,x3_clean)
+}
+  
+  
 Vminuslike=function (alpha,beta1,beta2)
         {
             beta=c(beta1,beta2)
