@@ -1,0 +1,30 @@
+
+Estimate(s): -0.002833942 0.01548652 0.09954318 0.0005499801 0.001835873 0.00192698 0.002807273 0.2082245 0.00050209 -0.001310179 -0.0004977244 -0.001112088 9.869874e-05 
+> summary(maxl)
+--------------------------------------------
+Maximum Likelihood estimation
+Nelder-Mead maximisation, 122 iterations
+Return code 0: successful convergence 
+Log-Likelihood: -12248.58 
+13  free parameters
+Estimates:
+          Estimate Std. error  t value  Pr(> t)    
+alpha   -2.834e-03  4.414e-06 -641.964  < 2e-16 ***
+beta1_s  1.549e-02  2.883e-05  537.236  < 2e-16 ***
+beta2_s  9.954e-02         NA       NA       NA    
+step1_s  5.500e-04  1.288e-04    4.270 1.96e-05 ***
+step2_s  1.836e-03  7.002e-04    2.622  0.00874 ** 
+step3_s  1.927e-03  6.185e-04    3.115  0.00184 ** 
+step4_s  2.807e-03  4.782e-05   58.706  < 2e-16 ***
+beta1_c  2.082e-01  7.511e-04  277.217  < 2e-16 ***
+beta2_c  5.021e-04  1.249e-02    0.040  0.96795    
+step1_c -1.310e-03  2.053e-03   -0.638  0.52344    
+step2_c -4.977e-04  5.511e-03   -0.090  0.92804    
+step3_c -1.112e-03  3.713e-03   -0.300  0.76453    
+step4_c  9.870e-05  1.325e-02    0.007  0.99406    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+--------------------------------------------
+Messages d'avis :
+1: In sqrt(diag(vc)) : production de NaN
+2: In sqrt(diag(vc)) : production de NaN
