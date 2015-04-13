@@ -11,7 +11,7 @@
 #########################################################
 
 ## On définit le degré du polynôme de Tchebychev a priori
-n_Tcheby = 5
+n_Tcheby = 10
 
 
 #on rédéfinit le point de départ de mle et optim 
@@ -117,8 +117,11 @@ estimlem
 maxl = maxLik(logLik = fun, start = c(alpha_s=init[1],beta1_s=init[2],beta2_s=init[3],alpha_c=init[4],beta1_c=init[5],beta2_c=init[6]),method="NM")
 summary(maxl)
 
+nb_NAN = NULL
+logl = NULL
+Resmaxl = NULL
 
-nbupdate = 3
+nbupdate = 5
 while ((nbupdate>0) ){
   
   for (i in 1:nb_param){
@@ -127,9 +130,17 @@ while ((nbupdate>0) ){
   
   maxl = maxLik(logLik = fun, start = c(alpha_s=init[1],beta1_s=init[2],beta2_s=init[3],alpha_c=init[4],beta1_c=init[5],beta2_c=init[6]),method="NM")
   
+  nb_NAN = c(nb_NAN,sum(is.nan(stdEr(maxl))))
+  logl = c(logl,logLik(maxl))
+  Resmaxl = c(Resmaxl, maxl)
+  print(nbupdate)
   
   nbupdate = nbupdate -1
 }
+
+minNAN = which(nb_NAN==min(nb_NAN))[1]
+maxlogl = which(logl==max(logl))
+
 
 summary(maxl)
 

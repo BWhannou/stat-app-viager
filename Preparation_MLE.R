@@ -35,7 +35,12 @@ while((abs(a-b))>(10^-5)){
 return (b)
 }
 
-
+############ CHOIX CARACTERISTIQUES ########################################
+carac_sup = 1 #1 pour lancer le programme avec sans ajout de carac, 0 sinon
+nb_carac_sup = 1
+############################################################################
+  
+  
 ##################### CHOIX CLONE/SELLER#################################
 clone = 1 #On met 0 pour évaluer les seller et 1 pour évaluer les clones
 #########################################################################
@@ -614,7 +619,7 @@ if (clone ==0){
 
 #resi_quartiles = c(summary(resi)[[2]],summary(resi)[[3]],summary(resi)[[5]])
 
-nb_carac =2
+nb_carac =2+nb_carac_sup
 
 #on recode le sexe entre 0 et 1 et on obtient homme =1 et femme =0
 x1 = 2-T1sex
@@ -627,11 +632,33 @@ if (clone ==0){
 	x2 = x2_seller
 }
 
+if(carac_sup ==1){
+  #On a appelé carac_a_raj la liste des caractéristiques à rajouter
+  
+  ###########TRAITEMENT A LA MAIN###################
+  x3 = Ind_Region_birth
+  
+}  
+  
 #Ces deux caractéristiques ont même longueur
-
+if (carac_sup==0){
 caracteristique = matrix(0,length(x1),nb_carac)
 caracteristique[,1] = x1
 caracteristique[,2] = x2
+}
+  
+  
+if(carac_sup==1){
+
+  #x3 et x1 ont même longueur
+  
+  caracteristique = matrix(0,length(x1),nb_carac)
+  caracteristique[,1] = x1
+  caracteristique[,2] = x2
+  caracteristique[,3]= x3
+
+  
+}
 
 contrat = (datecontrat)
 
