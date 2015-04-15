@@ -1,4 +1,4 @@
-  library(stats4)  # mle
+library(stats4)  # mle
   library(pracma)  # fsolve
   library(maxLik)  #autre package pour mle de 2011
  t_end=20000
@@ -37,12 +37,21 @@ return (b)
 
 ############ CHOIX CARACTERISTIQUES ########################################
 carac_sup = 1 #1 pour lancer le programme avec sans ajout de carac, 0 sinon
-nb_carac_sup = 1
+#Indique si on prend Naissance ou Deces
+Deces = 0
+Naissance = 1
+if(Deces ==1){
+  nb_carac_sup = 3
+}
+if(Naissance==1){
+  nb_carac_sup = 6
+}
+
 ############################################################################
   
   
 ##################### CHOIX CLONE/SELLER#################################
-clone = 1 #On met 0 pour évaluer les seller et 1 pour évaluer les clones
+clone = 0 #On met 0 pour évaluer les seller et 1 pour évaluer les clones
 #########################################################################
 
 
@@ -58,7 +67,7 @@ step = 0
 pol1 = 0
 pol2 = 0
 pol3 = 0
-Tcheby = 1
+Tcheby = 0
 ########################
   
   
@@ -633,10 +642,29 @@ if (clone ==0){
 }
 
 if(carac_sup ==1){
-  #On a appelé carac_a_raj la liste des caractéristiques à rajouter
   
   ###########TRAITEMENT A LA MAIN###################
-  x3 = Ind_Region_birth
+  if(Deces ==1){
+  ## On prend 3 régions de décès
+  #Paris_deces est la plus fréquente et Grande_couronne est la moins fréquente
+  #On prend Paris pour référence
+  x3 = Petite_couronne_deces
+  x4 = Grande_couronne_deces
+  x5 = Reste_du_monde_deces
+  }
+  
+  if(Naissance==1){
+    #On prend les 6 régions 
+    #On prend à nouveau Paris pour référence
+   
+    x3 = Nord_Ouest
+    x4 = Ouest
+    x5 = Est
+    x6 = Sud
+    x7 = couronne_n
+    x8 = Outre_Mer
+    
+  }
   
 }  
   
@@ -649,15 +677,29 @@ caracteristique[,2] = x2
   
   
 if(carac_sup==1){
-
-  #x3 et x1 ont même longueur
   
   caracteristique = matrix(0,length(x1),nb_carac)
   caracteristique[,1] = x1
   caracteristique[,2] = x2
-  caracteristique[,3]= x3
-
   
+  if(Deces==1){
+
+  #x3 et x1 ont même longueur
+  caracteristique[,3] = x3
+  caracteristique[,4] = x4
+  caracteristique[,5] = x5
+  
+  }
+  
+  if(Naissance==1){
+    
+    caracteristique[,3] = x3
+    caracteristique[,4] = x4
+    caracteristique[,5] = x5
+    caracteristique[,6] = x6
+    caracteristique[,7] = x7
+    caracteristique[,8] = x8
+  }
 }
 
 contrat = (datecontrat)
@@ -676,6 +718,7 @@ datamatrix[,nb_carac+2]= contrat
 n_datamatrix = size(datamatrix)[1]
 
   
+Indice_a_enlever = NULL
 
 for (i in 1:n_datamatrix){
 	if( i <=size(datamatrix)[1]){
@@ -683,7 +726,8 @@ for (i in 1:n_datamatrix){
   
   if ( prod(!is.na(datamatrix[i,])) ==0) #on utilise le fait que TRUE*TRUE =1, TRUE*FAlSE =0 et FALSE*FALSE=0 pour tester s'il ya un NA
   {
-    datamatrix = datamatrix[-i,] #on enlève la ligne avec le NA
+    #datamatrix = datamatrix[-i,] #on enlève la ligne avec le NA
+       Indice_a_enlever = c(Indice_a_enlever,i)
   }
     
   else 
@@ -695,15 +739,21 @@ for (i in 1:n_datamatrix){
 
 }
   
+datamatrix = datamatrix[-Indice_a_enlever,]
+
+Indice_a_enlever = NULL
 
 #On enleve les valeurs negatives de resi
 for (k in 1:  size(datamatrix)[1]){
 	if(k<= size(datamatrix)[1]){
 	if (datamatrix[k,1]<0){
-		datamatrix = datamatrix[-k,]
+		Indice_a_enlever = c(Indice_a_enlever,k)
 	}
 	}
 }
+
+datamatrix = datamatrix[-Indice_a_enlever,]
+
 
 n_datamatrixclean = size(datamatrix)[1]
 
@@ -721,34 +771,68 @@ caracteristique_clean[,2] = x2_clean
 datamatrix_data = data.frame(resi_clean,contrat_clean,x1_clean,x2_clean)
 }
 
-if(carac_sup==0){
+if(carac_sup==1){
+  
+  if(Deces == 1){
   
   resi_clean = datamatrix[,1]
   x1_clean = datamatrix[,2]
   x2_clean = datamatrix[,3]
   x3_clean = datamatrix[,4]
-  contrat_clean = datamatrix[,5]
+  x4_clean = datamatrix[,5]
+  x5_clean = datamatrix[,6]
+  contrat_clean = datamatrix[,nb_carac+2]
   
   caracteristique_clean = matrix(0,length(x1_clean),nb_carac)
   caracteristique_clean[,1] = x1_clean
   caracteristique_clean[,2] = x2_clean
   caracteristique_clean[,3] = x3_clean
+  caracteristique_clean[,4] = x4_clean
+  caracteristique_clean[,5] = x5_clean
     
-  datamatrix_data = data.frame(resi_clean,contrat_clean,x1_clean,x2_clean,x3_clean)
+  datamatrix_data = data.frame(resi_clean,contrat_clean,x1_clean,x2_clean,x3_clean,x4_clean,x5_clean)
+  }
+  
+  if(Naissance==1){
+    resi_clean = datamatrix[,1]
+    x1_clean = datamatrix[,2]
+    x2_clean = datamatrix[,3]
+    x3_clean = datamatrix[,4]
+    x4_clean = datamatrix[,5]
+    x5_clean = datamatrix[,6]
+    x6_clean = datamatrix[,7]
+    x7_clean = datamatrix[,8]
+    x8_clean = datamatrix[,9]
+    
+    contrat_clean = datamatrix[,nb_carac+2]
+    
+    caracteristique_clean = matrix(0,length(x1_clean),nb_carac)
+    caracteristique_clean[,1] = x1_clean
+    caracteristique_clean[,2] = x2_clean
+    caracteristique_clean[,3] = x3_clean
+    caracteristique_clean[,4] = x4_clean
+    caracteristique_clean[,5] = x5_clean
+    caracteristique_clean[,6] = x6_clean
+    caracteristique_clean[,7] = x7_clean
+    caracteristique_clean[,8] = x8_clean
+    
+    datamatrix_data = data.frame(resi_clean,contrat_clean,x1_clean,x2_clean,x3_clean,x4_clean,x5_clean,x6_clean,x7_clean,x8_clean)
+    
+  }
 }
   
   
-Vminuslike=function (alpha,beta1,beta2)
-        {
-            beta=c(beta1,beta2)
-            return (-log_like(alpha,beta,resi_clean,caracteristique_clean,contrat_clean))
-        }
+#Vminuslike=function (alpha,beta1,beta2)
+#        {
+#            beta=c(beta1,beta2)
+#            return (-log_like(alpha,beta,resi_clean,caracteristique_clean,contrat_clean))
+#        }
 
-Vminuslikev=function (X)
-        {
-	return (Vminuslike(X[1],X[2],X[3]))
-
-      }
+#Vminuslikev=function (X)
+#        {
+#	return (Vminuslike(X[1],X[2],X[3]))
+#
+#     }
 #On veut avoir resi_clean comme une matrice avec deux colonnes : 1 pour les sellers et 2 pour les clones
 
 #il faut avoir les caracteristiques sous deux matrices différentes pour clones et sellers
@@ -848,5 +932,3 @@ if((class(try(seller_done))!="try-error") &  (class(try(clone_done))!="try-error
 #	kstest[i] = ks.test(tirage_seller,tirage_clone)$p.value
 #}
 #kstest
-
-
