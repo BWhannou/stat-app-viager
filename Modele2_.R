@@ -30,7 +30,7 @@ caracteristique_clone=NULL
 caracteristique_seller=NULL
 
 caracteristique_seller=age_at_viager
-caracteristique_seller=c(caracteristique_seller,T1sex)   # pour ajouter des caracteristiques
+caracteristique_seller=c(caracteristique_seller,T1sex-1)   # pour ajouter des caracteristiques
 
 carac_seller=matrix(caracteristique_seller,ncol=n_seller)
 
@@ -45,7 +45,7 @@ resi_seller=delta_age
 resi_clone=delta_age_clone
 
 data_seller=data.frame(residu=resi_seller,carac=carac_seller,date=contrat)
-data_clone=data.frame(residu=resi_clone,carac=carac_seller,date=contrat)
+data_clone=data.frame(residu=resi_clone,carac=carac_clone,date=contrat)
 
               ####################################
               ######## nettoyage #################
@@ -58,7 +58,6 @@ for (i in 1:length(data_seller$carac.1))
 	}
 }	
 
-data_seller=data_seller[-individu_enleve_s,]
 
 individu_enleve_c=NULL
 for (i in 1:length(datecontrat))
@@ -69,7 +68,8 @@ for (i in 1:length(datecontrat))
 	}
 }
 
-data_clone=data_clone[-individu_enleve_c,]
+data_seller=data_seller[-c(individu_enleve_s,individu_enleve_c),]
+data_clone=data_clone[-c(individu_enleve_c,individu_enleve_s),]
 # individu_enleve_c==individu_enleve_s
 
 
@@ -274,6 +274,41 @@ return (res)
 
       papa=mle(Vminuslike,start=list(alpha1=init[1],alpha2=init[2],beta1_s=init[3],beta2_s=init[4],step1_s=init[5],step2_s=init[6],step3_s=init[7],step4_s=init[8],beta1_c=init[9],beta2_c=init[10],step1_c=init[11],step2_c=init[12],step3_c=init[13],step4_c=init[14]))  #,method="BFGS"
 
+	
 summary(papa)
+maxl = maxLik(loglike , start = c(alpha=init[1],beta1_s=init[2],beta2_s=init[3],step1_s=init[4],step2_s=init[5],step3_s=init[6],step4_s=init[7],beta1_c=init[8],beta2_c=init[9],step1_c=init[10],step2_c=init[11],step3_c=init[12],step4_c=init[13]),method="NM")
+summary(maxl)
+
+
+	##############################################
+## On essaie d'entraîner l'algo en updatant ##
+## le point de départ ########################
+##############################################
+
+
+nbupdate = 3
+while ((nbupdate>0) ){
+  
+init[1] = maxl$estimate[[1]]
+init[2] = maxl$estimate[[2]]
+init[3] = maxl$estimate[[3]]
+init[4] = maxl$estimate[[4]]
+init[5] = maxl$estimate[[5]]
+init[6] = maxl$estimate[[6]]
+init[7] = maxl$estimate[[7]]
+init[8] = maxl$estimate[[8]]
+init[9] = maxl$estimate[[9]]
+init[10] = maxl$estimate[[10]]
+init[11] = maxl$estimate[[11]]
+init[12] = maxl$estimate[[12]]
+init[13] = maxl$estimate[[13]]
+	maxl = maxLik(loglike , start = c(alpha=init[1],beta1_s=init[2],beta2_s=init[3],step1_s=init[4],step2_s=init[5],step3_s=init[6],step4_s=init[7],beta1_c=init[8],beta2_c=init[9],step1_c=init[10],step2_c=init[11],step3_c=init[12],step4_c=init[13]),method="NM")
+
+print(nbupdate)
+summary(maxl)
+nbupdate = nbupdate -1
+}
+
+summary(maxl)
 
 	
