@@ -16,8 +16,8 @@ t_end=20000  # max(T1deathdate)=18092
 ########################## INITIATION #######################
 #############################################################
 
-init0=c(0.1,0.0001,0.2,0.001,2,1,0.5,0.75,0.21,0.0015,2.1,1.1,0.15,0.7)
-
+init0=c(10^-5,10^-2,0.1,10^-4,6*10^-4,10^-5,3*10^-4,0.21,0.0014,10^-4,6*10^-5,10^-5,3*10^-4)
+maxl=NULL
 #############################################################
 ################# CONSTRUCTION DE LA BASE DE DONNEES ########
 ######################## REDUITE ET SANS na #################
@@ -35,7 +35,8 @@ caracteristique_seller=c(caracteristique_seller,T1sex-1)   # pour ajouter des ca
 carac_seller=matrix(caracteristique_seller,ncol=n_seller)
 
 caracteristique_clone=(dayoflifemean-delta_age_clone)/365
-caracteristique_clone=c(caracteristique_clone,T1sex)
+#caracteristique_clone=Ind_Region_birth
+caracteristique_clone=c(caracteristique_clone,T1sex-1)
 
 carac_clone=matrix(caracteristique_clone,ncol=n_clone)
 
@@ -45,7 +46,7 @@ resi_seller=delta_age
 resi_clone=delta_age_clone
 
 data_seller=data.frame(residu=resi_seller,carac=carac_seller,date=contrat)
-data_clone=data.frame(residu=resi_clone,carac=carac_clone,date=contrat)
+data_clone=data.frame(residu=resi_clone,carac=carac_seller,date=contrat)
 
               ####################################
               ######## nettoyage #################
@@ -59,6 +60,7 @@ for (i in 1:length(data_seller$carac.1))
 }	
 
 
+
 individu_enleve_c=NULL
 for (i in 1:length(datecontrat))
 {
@@ -68,9 +70,12 @@ for (i in 1:length(datecontrat))
 	}
 }
 
+data_clone=data_clone[-c(individu_enleve_s,individu_enleve_c),]
 data_seller=data_seller[-c(individu_enleve_s,individu_enleve_c),]
-data_clone=data_clone[-c(individu_enleve_c,individu_enleve_s),]
 # individu_enleve_c==individu_enleve_s
+length(individu_enleve_c)
+length(individu_enleve_s)
+
 
 
 #############################################################
@@ -84,6 +89,7 @@ limits=c(a[[1]],a[[2]],a[[3]],a[[4]],a[[5]])
 ind1= function (d)
 {
 	res=0
+	#print(d)
 	if (d<=limits[2])
 	{
 		res=1
@@ -127,12 +133,11 @@ ind4= function (d)
 #############################################################
 
 #steps=c(1,2,3,4)
-
-d=4000
 log_like=function (alpha, steps, beta,resi_,carac_,contrat_)
 {
 	Psi1 = function(d)
-	{
+	{	
+		print(d)
 		ind=c(ind1(d),ind2(d),ind3(d),ind4(d))
 		
 		res=t(ind)%*%steps
@@ -141,23 +146,20 @@ log_like=function (alpha, steps, beta,resi_,carac_,contrat_)
 
 	lambda = function(d,x,t)
 	{
-		return(Psi1(d)*exp(beta%*%x+alpha[1]+alpha[2]*t))
+		return(Psi1(d)*exp(beta%*%x+alpha*t))
 	}
 
 	logLambda = function (d,x,t)
 	{
-		return (log(Psi1(d))+beta%*%x+alpha[1]+alpha[2]*t)
+		return (log(Psi1(d))+beta%*%x+alpha*t)
 	}
 
 	intLambda= function(d,x,t)
 	{
 		res=NULL
-		expo=exp(beta%*%x+alpha[1]+alpha[2]*t)
+		expo=exp(beta%*%x+alpha*t)
 		ind=c(ind1(d),ind2(d),ind3(d),ind4(d))
 		interval=which(ind==1)                   #reperer l'intervalle dans lequel se trouve d
-		print(ind)
-		print(d)
-		print(interval)
 		if (interval==1)
 		{
 			return (steps[1]*d*expo)
@@ -209,8 +211,9 @@ log_like=function (alpha, steps, beta,resi_,carac_,contrat_)
 		contrib[i]=logcontribution(resi_[i],carac_[i,],contrat_[i])
 	}
 
-
-	return (sum(contrib,na.rm=TRUE))	
+	res=sum(contrib,na.rm=TRUE)
+	#print(res)
+	return (res)	
 
 
 }
@@ -227,15 +230,27 @@ contrat=data_seller$date
 resi_c=data_clone$residu
 caracteristique_c=matrix(c(data_seller$carac.1,data_seller$carac.2),ncol=n_seller)
 
-        Vminuslike=function (alpha1,alpha2,beta1_s,beta2_s,step1_s,step2_s,step3_s,step4_s,beta1_c,beta2_c,step1_c,step2_c,step3_c,step4_c)
+        Vminuslike=function (alpha,beta1_s,beta2_s,step1_s,step2_s,step3_s,step4_s,beta1_c,beta2_c,step1_c,step2_c,step3_c,step4_c)
 {
   beta_s=c(beta1_s,beta2_s)
-  step_s=c(step1_s,step2_s,step3_s,step4_s)
-  step_c=c(step1_c,step2_c,step3_c,step4_c)
+  step_s=c(exp(step1_s),exp(step2_s),exp(step3_s),exp(step4_s))
+  step_c=c(exp(step1_c),exp(step2_c),exp(step3_c),exp(step4_c))
   beta_c=c(beta1_c,beta2_c)
-  alpha=c(alpha1,alpha2)
+
 	res=-log_like(alpha,step_s,beta_s,resi_s,caracteristique_s,contrat)- log_like(alpha,step_c,  beta_c, resi_c, caracteristique_c, contrat)
-  print(res)
+  #print(res)
+return (res)
+}
+
+        loglike=function (param) #(alpha,beta1_s,beta2_s,step1_s,step2_s,step3_s,step4_s,beta1_c,beta2_c,step1_c,step2_c,step3_c,step4_c)
+{
+  beta_s=c(param[2],param[3])
+  step_s=c(exp(param[4]),exp(param[5]),exp(param[6]),exp(param[7]))
+  step_c=c(exp(param[10]),exp(param[11]),exp(param[12]),exp(param[13]))
+  beta_c=c(param[8],param[9])
+	alpha=param[1]
+	res=log_like(alpha,step_s,beta_s,resi_s,caracteristique_s,contrat)+ log_like(alpha,step_c,  beta_c, resi_c, caracteristique_c, contrat)
+
 return (res)
 }
 
@@ -244,11 +259,11 @@ return (res)
 ##############################################################
 
 	init=init0
-	papatry = try(mle(Vminuslike,start=list(alpha1=init[1],alpha2=init[2],beta1_s=init[3],beta2_s=init[4],step1_s=init[5],step2_s=init[6],step3_s=init[7],step4_s=init[8],beta1_c=init[9],beta2_c=init[10],step1_c=init[11],step2_c=init[12],step3_c=init[13],step4_c=init[14]),method="BFGS"),silent = T)
+	papatry = try(mle(Vminuslike,start=list(alpha=init[1],beta1_s=init[2],beta2_s=init[3],step1_s=init[4],step2_s=init[5],step3_s=init[6],step4_s=init[7],beta1_c=init[8],beta2_c=init[9],step1_c=init[10],step2_c=init[11],step3_c=init[12],step4_c=init[13]),method="BFGS"),silent = T)
 	
 
 	nbessais = 0
-	nbessais_max = 100
+	nbessais_max = 1
 	
 	while( (class(papatry)=="try-error") & (nbessais <=nbessais_max) ){
 
@@ -265,15 +280,14 @@ return (res)
 		init[11] = init[11] + ((-1)^(nbessais))*0.05*(nbessais)
 		init[12] = init[12] + ((-1)^(nbessais))* 0.2*(nbessais/3)
 		init[13] = init[13] + ((-1)^(nbessais))* 0.2*(nbessais/3)
-		init[14] = init[14] + ((-1)^(nbessais))*0.1*(nbessais/3)
+
 	print(nbessais)
-		papatry = try(mle(Vminuslike,start=list(alpha1=init[1],alpha2=init[2],beta1_s=init[3],beta2_s=init[4],step1_s=init[5],step2_s=init[6],step3_s=init[7],step4_s=init[8],beta1_c=init[9],beta2_c=init[10],step1_c=init[11],step2_c=init[12],step3_c=init[13],step4_c=init[14]),method="BFGS"),silent = T)
+		papatry = try(mle(Vminuslike,start=list(alpha=init[1],beta1_s=init[2],beta2_s=init[3],step1_s=init[4],step2_s=init[5],step3_s=init[6],step4_s=init[7],beta1_c=init[8],beta2_c=init[9],step1_c=init[10],step2_c=init[11],step3_c=init[12],step4_c=init[13]),method="BFGS"),silent = T)
 		nbessais = nbessais+1
 	
 	}
 
-      papa=mle(Vminuslike,start=list(alpha1=init[1],alpha2=init[2],beta1_s=init[3],beta2_s=init[4],step1_s=init[5],step2_s=init[6],step3_s=init[7],step4_s=init[8],beta1_c=init[9],beta2_c=init[10],step1_c=init[11],step2_c=init[12],step3_c=init[13],step4_c=init[14]))  #,method="BFGS"
-
+      papa=mle(Vminuslike,start=list(alpha=init[1],beta1_s=init[2],beta2_s=init[3],step1_s=init[4],step2_s=init[5],step3_s=init[6],step4_s=init[7],beta1_c=init[8],beta2_c=init[9],step1_c=init[10],step2_c=init[11],step3_c=init[12],step4_c=init[13]))  #,method="BFGS"
 	
 summary(papa)
 maxl = maxLik(loglike , start = c(alpha=init[1],beta1_s=init[2],beta2_s=init[3],step1_s=init[4],step2_s=init[5],step3_s=init[6],step4_s=init[7],beta1_c=init[8],beta2_c=init[9],step1_c=init[10],step2_c=init[11],step3_c=init[12],step4_c=init[13]),method="NM")
@@ -311,4 +325,3 @@ nbupdate = nbupdate -1
 
 summary(maxl)
 
-	
