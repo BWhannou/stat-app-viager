@@ -52,7 +52,7 @@ if(Naissance==1){
   
   
 ##################### CHOIX CLONE/SELLER#################################
-clone = 0 #On met 0 pour évaluer les seller et 1 pour évaluer les clones
+clone = 1 #On met 0 pour évaluer les seller et 1 pour évaluer les clones
 #########################################################################
 
 
@@ -459,6 +459,12 @@ lambda = function (d,x,t,beta,step1,step2,step3,step4)
 	return (res)
 	}
 
+log_lambda = function (d,x,t,beta,step1,step2,step3,step4)
+	{
+	res = log(Psi0(t+d)) + log(Psi1(d,beta,step1,step2,step3,step4)) + (crossprod(beta , x))
+	return (res)
+	}
+
 
 S=function(d,x,t,beta,step1,step2,step3,step4)
 	{
@@ -474,26 +480,26 @@ S=function(d,x,t,beta,step1,step2,step3,step4)
 		
 
 		if (d<= resi_quartiles[1]){
-			res = exp_b_x *step1*f(0,d)
+			res = exp_b_x *exp(step1)*f(0,d)
       return (exp(-res))
 		}
 
 
 		if ( (d> resi_quartiles[1]) &(d<= resi_quartiles[2]) ){
-			   res1 = step1*f(0,resi_quartiles[1]) + step2*f(resi_quartiles[1],d)
+			   res1 = exp(step1)*f(0,resi_quartiles[1]) + exp(step2)*f(resi_quartiles[1],d)
          res = exp_b_x * res1
          return(exp(-res))
            
 		}
 
 		if ( (d> resi_quartiles[2]) &(d<= resi_quartiles[3]) ){
-			res1 = step1*f(0,resi_quartiles[1]) + step2*f(resi_quartiles[1],resi_quartiles[2]) + step3*f(resi_quartiles[2],d)
+			res1 = exp(step1)*f(0,resi_quartiles[1]) + exp(step2)*f(resi_quartiles[1],resi_quartiles[2]) + exp(step3)*f(resi_quartiles[2],d)
       res = exp_b_x * res1
       return (exp(-res))
 		}
 
 		if (d> resi_quartiles[3]){
-      res1 = step1*f(0,resi_quartiles[1]) + step2*f(resi_quartiles[1],resi_quartiles[2]) +step3*f(resi_quartiles[2],resi_quartiles[3]) + step4*f(resi_quartiles[3],d)
+      res1 = exp(step1)*f(0,resi_quartiles[1]) + exp(step2)*f(resi_quartiles[1],resi_quartiles[2]) + exp(step3)*f(resi_quartiles[2],resi_quartiles[3]) + exp(step4)*f(resi_quartiles[3],d)
       res = exp_b_x * res1
       return (exp(-res))
 		}
@@ -514,26 +520,26 @@ log_S = function(d,x,t,beta,step1,step2,step3,step4){
     
     
     if (d<= resi_quartiles[1]){
-      res = exp_b_x *step1*f(0,d)
+      res = exp_b_x *exp(step1)*f(0,d)
       return ((-res))
     }
     
     
     if ( (d> resi_quartiles[1]) &(d<= resi_quartiles[2]) ){
-      res1 = step1*f(0,resi_quartiles[1]) + step2*f(resi_quartiles[1],d)
+      res1 = exp(step1)*f(0,resi_quartiles[1]) + exp(step2)*f(resi_quartiles[1],d)
       res = exp_b_x * res1
       return((-res))
       
     }
     
     if ( (d> resi_quartiles[2]) &(d<= resi_quartiles[3]) ){
-      res1 = step1*f(0,resi_quartiles[1]) + step2*f(resi_quartiles[1],resi_quartiles[2]) + step3*f(resi_quartiles[2],d)
+      res1 = exp(step1)*f(0,resi_quartiles[1]) + exp(step2)*f(resi_quartiles[1],resi_quartiles[2]) + exp(step3)*f(resi_quartiles[2],d)
       res = exp_b_x * res1
       return ((-res))
     }
     
     if (d> resi_quartiles[3]){
-      res1 = step1*f(0,resi_quartiles[1]) + step2*f(resi_quartiles[1],resi_quartiles[2]) +step3*f(resi_quartiles[2],resi_quartiles[3]) + step4*f(resi_quartiles[3],d)
+      res1 = exp(step1)*f(0,resi_quartiles[1]) + exp(step2)*f(resi_quartiles[1],resi_quartiles[2]) + exp(step3)*f(resi_quartiles[2],resi_quartiles[3]) + exp(step4)*f(resi_quartiles[3],d)
       res = exp_b_x * res1
       return ((-res))
     }
