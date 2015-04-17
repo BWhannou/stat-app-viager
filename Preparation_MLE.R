@@ -36,10 +36,11 @@ return (b)
 }
 
 ############ CHOIX CARACTERISTIQUES ########################################
-carac_sup = 1 #1 pour lancer le programme avec sans ajout de carac, 0 sinon
+carac_sup = 0 #1 pour lancer le programme avec sans ajout de carac, 0 sinon
 #Indique si on prend Naissance ou Deces
+nb_carac_sup = 0 
 Deces = 0
-Naissance = 1
+Naissance = 0
 if(Deces ==1){
   nb_carac_sup = 3
 }
@@ -58,8 +59,8 @@ clone = 0 #On met 0 pour évaluer les seller et 1 pour évaluer les clones
 #################### CHOIX PSI ##################
 
 ######## PSI1 #######
-expo = 1
-step = 0
+expo = 0
+step = 1
 #####################
 
 ######## PSI0 ##########
@@ -461,72 +462,81 @@ lambda = function (d,x,t,beta,step1,step2,step3,step4)
 
 S=function(d,x,t,beta,step1,step2,step3,step4)
 	{
-		f= function (x){
-			return (0.5*x^2)
+		f= function (a,b){
+      #calcule l'intégrale de a à b de (t+u).du
+      y = 0.5*(t+b)^2
+      x = 0.5*(t+a))^2
+			return (y-x)
 		}
+  
 
-
-		integral = (1/2)*(d*d)
-		expint = exp(crossprod(beta , x)) * integral
 		exp_b_x = exp(crossprod(beta,x))
 		
 
 		if (d<= resi_quartiles[1]){
-			return ( exp(-exp(step1)*expint) )
+			res = exp_b_x *step1*f(0,d)
+      return (exp(-res))
 		}
 
 
 		if ( (d> resi_quartiles[1]) &(d<= resi_quartiles[2]) ){
-			return (exp(- exp_b_x*(exp(step1)*f(resi_quartiles[1]) + exp(step2)*f(d-resi_quartiles[1]) )  ) )
+			   res1 = step1*f(0,resi_quartiles[1]) + step2*f(resi_quartiles[1],d)
+         res = exp_b_x * res1
+         return(exp(-res))
+           
 		}
 
 		if ( (d> resi_quartiles[2]) &(d<= resi_quartiles[3]) ){
-			return (exp(- exp_b_x*(exp(step1)*f(resi_quartiles[1]) + exp(step2)*f(resi_quartiles[2]-resi_quartiles[1]) +exp(step3)*f(d-resi_quartiles[2]) )    ))
+			res1 = step1*f(0,resi_quartiles[1]) + step2*f(resi_quartiles[1],resi_quartiles[2]) + step3*f(resi_quartiles[2],d)
+      res = exp_b_x * res1
+      return (exp(-res))
 		}
 
 		if (d> resi_quartiles[3]){
-			return (exp(- exp_b_x*(exp(step1)*f(resi_quartiles[1]) + exp(step2)*f(resi_quartiles[2]-resi_quartiles[1]) +exp(step3)*f(resi_quartiles[3]-resi_quartiles[2]) +exp(step4)*f(d-resi_quartiles[3]) ) ))
+      res1 = step1*f(0,resi_quartiles[1]) + step2*f(resi_quartiles[1],resi_quartiles[2]) +step3*f(resi_quartiles[2],resi_quartiles[3]) + step4*f(resi_quartiles[3],d)
+      res = exp_b_x * res1
+      return (exp(-res))
 		}
 
 		
 	}
 
 log_S = function(d,x,t,beta,step1,step2,step3,step4){
-		f= function (x){
-			return (0.5*x^2)
-		}
-
-
-		integral = (1/2)*(d*d)
-		expint = exp(crossprod(beta , x)) * integral
-		exp_b_x = exp(crossprod(beta,x))
-		
-
-		if (d<= resi_quartiles[1]){
-			return ( (-exp(step1)*expint) )
-		}
-
-
-		if ( (d> resi_quartiles[1]) &(d<= resi_quartiles[2]) ){
-			return ((- exp_b_x*(exp(step1)*f(resi_quartiles[1]) + exp(step2)*f(d-resi_quartiles[1]) )  ) )
-		}
-
-		if ( (d> resi_quartiles[2]) &(d<= resi_quartiles[3]) ){
-			return ((- exp_b_x*(exp(step1)*f(resi_quartiles[1]) + exp(step2)*f(resi_quartiles[2]-resi_quartiles[1]) +exp(step3)*f(d-resi_quartiles[2]) )    ))
-		}
-
-		if (d> resi_quartiles[3]){
-			return ((- exp_b_x*(exp(step1)*f(resi_quartiles[1]) + exp(step2)*f(resi_quartiles[2]-resi_quartiles[1]) +exp(step3)*f(resi_quartiles[3]-resi_quartiles[2]) +exp(step4)*f(d-resi_quartiles[3]) ) ))
-		}
-
-
-}
-
-log_lambda = function(d,x,t,beta,step1,step2,step3,step4){
-
-		res = (log(Psi0(t+d))+ log(Psi1(d,beta,step1,step2,step3,step4)) + crossprod(beta,x))
-		return (res)
-
+      f= function (a,b){
+        #calcule l'intégrale de a à b de (t+u).du
+        y = 0.5*(t+b)^2
+        x = 0.5*(t+a))^2
+    return (y-x)
+      }
+    
+    
+    exp_b_x = exp(crossprod(beta,x))
+    
+    
+    if (d<= resi_quartiles[1]){
+      res = exp_b_x *step1*f(0,d)
+      return ((-res))
+    }
+    
+    
+    if ( (d> resi_quartiles[1]) &(d<= resi_quartiles[2]) ){
+      res1 = step1*f(0,resi_quartiles[1]) + step2*f(resi_quartiles[1],d)
+      res = exp_b_x * res1
+      return((-res))
+      
+    }
+    
+    if ( (d> resi_quartiles[2]) &(d<= resi_quartiles[3]) ){
+      res1 = step1*f(0,resi_quartiles[1]) + step2*f(resi_quartiles[1],resi_quartiles[2]) + step3*f(resi_quartiles[2],d)
+      res = exp_b_x * res1
+      return ((-res))
+    }
+    
+    if (d> resi_quartiles[3]){
+      res1 = step1*f(0,resi_quartiles[1]) + step2*f(resi_quartiles[1],resi_quartiles[2]) +step3*f(resi_quartiles[2],resi_quartiles[3]) + step4*f(resi_quartiles[3],d)
+      res = exp_b_x * res1
+      return ((-res))
+    }
 	}
 
 log_density = function (d,x,t,beta,step1,step2,step3,step4)
