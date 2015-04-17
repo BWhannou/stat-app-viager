@@ -465,7 +465,7 @@ S=function(d,x,t,beta,step1,step2,step3,step4)
 		f= function (a,b){
       #calcule l'intégrale de a à b de (t+u).du
       y = 0.5*(t+b)^2
-      x = 0.5*(t+a))^2
+      x = 0.5*(t+a)^2
 			return (y-x)
 		}
   
@@ -505,7 +505,7 @@ log_S = function(d,x,t,beta,step1,step2,step3,step4){
       f= function (a,b){
         #calcule l'intégrale de a à b de (t+u).du
         y = 0.5*(t+b)^2
-        x = 0.5*(t+a))^2
+        x = 0.5*(t+a)^2
     return (y-x)
       }
     
@@ -537,7 +537,8 @@ log_S = function(d,x,t,beta,step1,step2,step3,step4){
       res = exp_b_x * res1
       return ((-res))
     }
-	}
+
+}
 
 log_density = function (d,x,t,beta,step1,step2,step3,step4)
 	{
