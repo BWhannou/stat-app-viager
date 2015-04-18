@@ -1,0 +1,194 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{bbm}
+\title{Résultats des estimations}
+\author{}
+\date{\today}
+
+\begin{document}
+
+Dans tous les résultats, on considère les estimations statistiquement significatives par rapport au niveau de 5\%
+
+\section{Modèle}
+\begin{displaymath}
+\lambda_{k}(d,t_c,x_k)=(t_c+d)\sum_{i=1}^{4}K_{ik}\mathbbm{1}_{\left[ q_i;q_{i+1}\right]}(d)exp(\beta_k x)
+\end{displaymath}
+où,
+\begin{itemize}
+\item $d$ est la variable qui représente la durée de vie après la signature du contrat (vie résiduelle).
+\item $t_c$ représente la date de contrat. On a choisi de représenter cette date par la durée en jour qui sépare la signature du contrat du 01/01/1960.
+\item $k$  est une variable qui spécifie le type de l’individu, à savoir: vendeur en viager ou clone.
+\item $x$ représente des caractéristiques spécifiques à chaque individu.
+\item $(q_i)$ représentent les quartiles 
+\item $K_{ik}$ et $\beta_k$ sont les paramètres à estimer
+\end{itemize}
+\section{Résultats}
+Ici, nous avons pris deux caractéristiques évidentes pour les individus $x_1=sexe$\footnote{variable binaire: 0 pour la femme et 1 pour l'homme} et $x_2$=âge au moment du viager\\
+
+\begin{tabular}{c|c||}
+
+
+            
+$\beta_{1s}$ & 4.777   \\
+            &(0.25)    \\
+$\beta_{2s} $&-3.263  \\
+            &(0.01)  \\
+$\ln(K_{1s}) $& -3.723  \\
+        &(0.01)    \\
+$\ln(K_{2s})$ & -3.730 \\
+        &(0.003)    \\
+$\ln(K_{3s})$ & -3.891  \\
+        &(0.01)    \\
+$\ln(K_{4s})$ & -4.685  \\
+        &(0.01)    \\
+        \end{tabular}
+        \begin{tabular}{c|c|}
+$\beta_{1c}$ & -7.720 \\
+            &(0.00001)  \\
+$\beta_{2c}$ & -4.742  \\
+            &(0.000003) \\
+$\ln(K_{1c})$ & -2.556 \\
+        &(0.001)  \\
+$\ln(K_{2c})$ & -1.735  \\
+        &(0.004) \\
+$\ln(K_{3c})$ & -1.968  \\
+        &(0.004) \\
+$\ln(K_{4c})$ & -4.323   \\
+        &(0.002)  \\
+\end{tabular}\\
+
+tous les résultats étant statistiquement significatifs
+
+
+\section{Modèle}
+\begin{displaymath}
+\lambda_{k}(d,t_c,x_k)=\psi_{0}(t_c+d)*d*\exp(\beta_k x+\alpha_k)
+\end{displaymath}
+où,
+\begin{itemize}
+\item $\psi_{0}$ polynôme de Tchebychev de dégré 10
+\item $d$ est la variable qui représente la durée de vie après la signature du contrat (vie résiduelle).
+\item $t_c$ représente la date de contrat. On a choisi de représenter cette date par la durée en jour qui sépare la signature du contrat du 01/01/1960.
+\item $k$  est une variable qui spécifie le type de l’individu, à savoir: vendeur en viager ou clone.
+\item $x$ représente des caractéristiques spécifiques à chaque individu.
+\item les $\beta_k$ sont les paramètres à estimer
+\end{itemize}
+\section{Résultats}
+Ici, nous avons pris deux caractéristiques évidentes pour les individus $x_1=sexe$\footnote{variable binaire: 0 pour la femme et 1 pour l'homme} et $x_2$=âge au moment du viager\\
+
+
+\begin{tabular}{c|c||}
+
+
+            
+$\beta_{1s}$ & 0.414   \\
+            &(0.08)    \\
+$\beta_{2s} $& 0.0643  \\
+            &(0.10)  \\
+$\alpha_s $& -72.363  \\
+        &(0.82)    \\
+        \end{tabular}
+        \begin{tabular}{c|c|}
+$\beta_{1c}$ & 0.658 \\
+            &(0.001)  \\
+$\beta_{2c}$ & 0.1050  \\
+            &(0.08) \\
+$\alpha_c$ & -74.405 \\
+        &(0.62)  \\
+\end{tabular}\\
+
+tous les résultats étant statistiquement significatifs
+
+
+\section{Résultats avec région de naissance}
+
+On évalue également un modèle où : $x_{1}$ = sexe, $x_{2}$ = âge au moment du viager, $x_{3}$ = Nord Ouest ,$x_{4}$ = Ouest , $x_{5}$ = Est , $x_{6}$ = Sud ,$x_{7}$ = couronne , $x_{8}$ = Outre-mer .
+Il faut comprendre ici par exemple que $x_{3}$ vaut 1 si l'individu $i$ est né dans le Nord-Ouest .\\
+
+\begin{tabular}{c|c||}
+
+
+            
+$\beta_{1s}$ & 0.448  \\
+            &(0.13)    \\
+$\beta_{2s} $& 0.480  \\
+            &(0.11)  \\
+$\beta_{3s} $& 6.615  \\
+            &(0.21)  \\
+$\beta_{4s} $& 6.795  \\
+            &(0.18)  \\
+$\beta_{5s} $& 6.891  \\
+            &(0.17)  \\
+$\beta_{6s} $& 6.636  \\
+            &(0.19)  \\
+$\beta_{7s} $& 7.001  \\
+            &(0.17)  \\
+$\beta_{8s} $& 6.391  \\
+            &(0.71)  \\
+$\alpha_s $& -36.271  \\
+        &(0.95)    \\
+        \end{tabular}
+        \begin{tabular}{c|c|}
+$\beta_{1c}$ & 0.566 \\
+            &(0.09)  \\
+$\beta_{2c}$ & 1.053  \\
+            &(0.07) \\
+$\beta_{3c}$ & 0.063 \\
+            &(0.16)  \\
+$\beta_{4c}$ & 0.118  \\
+            &(0.15) \\
+$\beta_{5c}$ & 0.063 \\
+            &(0.15)  \\
+$\beta_{6c}$ & -0.037  \\
+            &(0.13) \\
+$\beta_{7c}$ & -0.232 \\
+            &(0.15)  \\
+$\beta_{8c}$ & -0.056  \\
+            &(0.50) \\
+$\alpha_c$ & -33.085 \\
+        &(0.61)  \\
+\end{tabular}\\
+
+Tous les coefficients sont significatifs sauf les $\beta_{3c}$ à $\beta_{8c}$
+
+\section{Résultats avec région de décès}
+
+On évalue également un modèle où : $x_{1}$ = sexe, $x_{2}$ = âge au moment du viager, $x_{3}$ = Petite couronne deces , $x_{4}$ = Grande couronne deces , $x_{5}$ = reste du monde deces .
+Il faut comprendre ici par exemple que $x_{3}$ vaut 1 si l'individu $i$ est mort dans la petite couronne .\\
+
+
+\begin{tabular}{c|c||}
+
+
+            
+$\beta_{1s}$ & 0.452   \\
+            &(0.10)    \\
+$\beta_{2s} $& 0.628  \\
+            &(0.23)  \\
+$\beta_{3s} $& -0.099  \\
+            &(0.16)  \\
+$\beta_{4s} $& -0.229  \\
+            &(0.20)  \\
+$\beta_{5s} $& -0.399  \\
+            &(0.20)  \\
+$\alpha_s $& -30.399  \\
+        &(1.90)    \\
+        \end{tabular}
+        \begin{tabular}{c|c|}
+$\beta_{1c}$ & 0.532 \\
+            &(0.09)  \\
+$\beta_{2c}$ & 0.945  \\
+            &(0.08) \\
+$\beta_{3c}$ & -0.083 \\
+            &(0.11)  \\
+$\beta_{4c}$ & -0.085  \\
+            &(0.13) \\
+$\beta_{5c}$ & 0.011 \\
+            &(0.12)  \\
+$\alpha_c$ & -32.216 \\
+        &(0.63)  \\
+\end{tabular}\\
+
+Tous les coefficients sont significatifs sauf $\beta_{3s}$, $\beta_{4s}$ et $\beta_{3c}$ à $\beta_{5c}$
+
+\end{document}
