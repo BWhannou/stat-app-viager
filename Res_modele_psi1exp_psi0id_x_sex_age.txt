@@ -5,11 +5,11 @@ MODELE PSI1exp et PSI0Id
 
 2 carac : t1 sex et age_at_viager/10
 
-ATTENTION : âge/10 pour avoir des valeurs finies
+ATTENTION : Ã¢ge/10 pour avoir des valeurs finies
 sex : 1 = homme et se rapporte au beta1
 
 
-Résultats  (soit 5 ou 6 updates)*************************************
+RÃ©sultats  (soit 5 ou 6 updates)*************************************
 
 --------------------------------------------
 Maximum Likelihood estimation
@@ -30,7 +30,7 @@ beta2_c   1.15315    0.05713  20.186  < 2e-16 ***
 ****************************************************
 
 
-Résultats (avec 30 updates de plus)
+RÃ©sultats (avec 30 updates de plus)
 
 --------------------------------------------
 Maximum Likelihood estimation
@@ -47,7 +47,7 @@ alpha_c -33.88497    0.45684 -74.172  < 2e-16 ***
 beta1_c   0.58170    0.08957   6.494 8.34e-11 ***
 beta2_c   1.15324    0.05778  19.960  < 2e-16 ***
 ---
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+Signif. codes:  0 â€˜***â€™ 0.001 â€˜**â€™ 0.01 â€˜*â€™ 0.05 â€˜.â€™ 0.1 â€˜ â€™ 1
 ----
 
 
@@ -81,7 +81,7 @@ allequal (teste all.equal(alpha_s,alpha_c), etc...)
 
 
 
-Code test égalité des coef
+Code test Ã©galitÃ© des coef
 
 
 > ttest1 = abs((maxl$estimate[[1]]-maxl$estimate[[4]])/sqrt(  vcov(maxl)[1,1]+vcov(maxl)[4,4] - 2*vcov(maxl)[1,4]  ))
@@ -105,4 +105,6 @@ pval :
 "##beta2 seller !!!=!!! beta2 clone##"
 
 
-Légende : !!!=!!! indique rejet égalité
+LÃ©gende : !!!=!!! indique rejet Ã©galitÃ©
+
+AIC = 19151.65 
