@@ -1,0 +1,60 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{graphicx}
+\usepackage{geometry}
+\geometry{hmargin=2.5cm,vmargin=2.5cm}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{mathtools, bm}
+\usepackage{amssymb, bm}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{lmodern}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{multirow}
+
+
+\title{\textbf{Rapport de Statistique Appliquée}}
+\author{Brian Whannou, Alexis Toullet, Eric Nana Njoya, David Billod de Filiquier\\
+Encadrants : L.Linnemer, M.Visser}
+
+\date{\today}
+
+\begin{document}
+
+\begin{titlepage}
+
+\maketitle
+
+\vspace{5cm}
+
+\hrulefill
+\begin{center}
+ \begin{huge}
+\textbf{Etude du marché du viager}\\
+\vspace{1cm}
+ - Vendre ou ne pas vendre, telle est la question - 
+ \end{huge}
+ \end{center} 
+
+\hrulefill
+
+
+\end{titlepage}
+
+
+\section*{Introduction}
+Comment un retraité dont le patrimoine se limite à sa résidence principale peut-il rester chez lui tout en augmentant ses revenus ? Une solution réside dans la vente du bien en viager. En effet celle-ci permet de rendre liquide une partie de la valeur du bien immobilier. D’après le Code Civil, le viager est un contrat aléatoire, c’est-à-dire qu’un des deux contractants gagnera ou perdra un certain montant, indéterminé à la signature du contrat. Si cet aléa n’existe pas, le contrat n’est pas valide.
+Au départ, le viager permet au vendeur qui était propriétaire du logement avant la signature du contrat de continuer à vivre dans ce logement même si le titre de propriété appartient alors à l’acheteur qui verse au vendeur un bouquet (capital initial) à la signature du contrat et une rente périodiquement. Le contrat prend fin à la mort de l’un des deux contractants, en principe le vendeur. Cependant de nombreux aménagements sont possibles tant qu’ils ne remettent pas en cause l’aléa. Le vendeur peut aussi quitter son logement, on parle alors de viager libre. D’après le Centre Européen de viagers, le viager est effectivement libre dans 5\% des cas. D’après le Conseil économique et social, il existe trois autres catégories de viager : les viagers sans rente (ou nue-propriété), les viagers dont l’occupation est limitée dans le temps, les viagers occupés dont le paiement de la rente est limité dans le temps.
+A la signature du contrat, le vendeur verse éventuellement à l’acheteur un bouquet qui vaut habituellement 20 à 30\% de la valeur du bien qui est estimée par un notaire mais peut atteindre 50\% du prix du bien, si ce n’est plus. Les Code Civil et Fiscal stipulent que « le prix de vente d’un immeuble aliéné en viager doit représenter la valeur du bien ». En outre, ce prix doit être exprimé dans le contrat et converti en rente viagère. Cependant la rente n’est pas calculée en prenant simplement en compte le prix du bien : la durée de vie du vendeur entre aussi en jeu. D’après le Conseil économique et social, la valeur du bien, le montant du bouquet éventuel, la rentabilité du bien, la réversibilité possible de la rente, l’âge du crédirentier sont aussi pris en considération pour fixer la rente. En général, la rente est fixée librement même si l’administration fiscale peut intervenir si le montant est jugé trop faible. La plupart des contrats indexe aussi la rente sur l’indice des prix à la consommation (fourni par exemple par l’INSEE) : cela garantit que le revenu réel du crédirentier reste constant dans le temps.
+ En principe, les vendeurs sont des personnes âgées, essentiellement veuves ou célibataires âgés sans héritiers proches. La plupart des contrats concernent des biens immobiliers de Paris et sa banlieue et dans les grandes villes de Provence-Alpes-Côte d’Azur (Cannes, Menton, Nice etc.). D’après Griffon, seulement 4000 contrats en viager sont signés par an. Malgré les incitations des pouvoirs publics, le marché du viager en France demeure restreint. Une explication naturelle réside dans l’éventuelle présence d’asymétrie d’information comme l’illustre le cas de Jeanne Calmant. En 1965, Jeanne Calmant nonagénaire et sans héritier vend sa maison en viager à son notaire alors âgé de 47 ans. Or Jeanne Calmant s’éteint à 122 ans. Son notaire, qui est décédé vingt ans avant elle, lui a versé le double de la valeur de la maison. Pour rassurer les craintes à propos de la durée a priori aléatoire du versement de la rente et répondre aux attentes des deux parties du contrat, les professionnels de l’immobilier peuvent utiliser des tables de durée de vie probables construites à partir des  tables de mortalité  établies par l’INSEE qui indiquent  « le quotient de mortalité des hommes et des femmes à chaque âge pour une période donnée, ainsi que l’espérance de vie qui en résulte ». L’agence immobilière Legasse Viager qui nous a aimablement fourni la base de données utilise quant à elle la table de mortalité dite de Daubry tandis que d’autres agences préfèrent construire leur propre table basée sur la survie de leurs précédents clients.
+Malgré la méfiance de l’opinion d’activité, le viager est un secteur d’avenir qui mérite donc d’être étudié. En 2013, 1\% seulement des transactions immobilières concernaient des biens en viager mais le 9 septembre 2014 , la Caisse des dépôts lance le projet Certivia afin de dynamiser le marché du viager qu’elle juge encore insuffisamment développé. Elle estime en outre que ce marché permet de répondre aux enjeux du vieillissement de la population. Selon l’Insee, en 2040, 30\% de la population française, c’est-à-dire 8 millions de personnes, devraient avoir plus de 60 ans. D’après l’Insee, 72\% des personnes de plus de 70 ans sont propriétaires de leur résidence principale et la Caisse des dépôts juge  « qu’un nombre croissant d’entre elles connaitra une diminution relative de leurs revenus ». Certivia fait office d’acheteur d’un bien qui doit être occupé : l’achat en viager de biens  libres ne fait pas partie de ses attributions et  le vendeur, obligatoirement un particulier, doit avoir plus de 70 ans. 
+
+Il est ainsi important pour la Caisse des dépôts d’avoir à sa disposition des tables de mortalité fiables : les tables de mortalité permettent certes d’estimer l’âge de décès d’un individu quelconque mais sont-elles véritablement utilisables pour les vendeurs en viager ? Ces derniers ne sont-ils pas atypiques en termes d’espérance de vie ? Ne faudrait-il pas créer une table de mortalité spécifique pour ces derniers ?  Pour répondre à ces questions nous disposons d’une base de données fournie par nos encadrants qui répertorient 564 transactions viagères conclues via l’agence immobilière parisienne Legasse Viager, et contient diverses informations sur les vendeurs comme leur sexe, leur âge au décès, leur âge au moment de signer le contrat, le montant de la rente, etc. A partir de cette base dont l’étude statistique sera menée plus loin, nous avons cherché à mettre en lumière les caractéristiques des vendeurs en viager. Pour cela, la base comprend, pour chaque vendeur, un clone moyen, c’est-à-dire une personne du même sexe que le vendeur, née le même mois de la même année et dans le même département. Nous possédons des informations sur ces clones, comme leur durée de vie, ce qui va permettre d’étudier les différences potentielles existant entre clones et vendeurs en terme de durée de vie, c’est-à-dire comprendre la spécificité des vendeurs en viager par rapport au reste de la population. 
+Nous allons commencer par exposer les principes théoriques qui sous-tendent notre étude. Puis, à l’aide de statistiques descriptives, nous allons montrer la composition de la base de données, afin de mieux comprendre quelles sont les personnes inscrites dans cette base. Enfin, nous détaillons notre méthode pour quantifier les différences entre vendeurs en viager et clones ainsi que les résultats issus de cette méthode.
+
+
+
+\end{document}
