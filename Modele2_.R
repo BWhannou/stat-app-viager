@@ -4,13 +4,13 @@
 
 
   library(maxLik) 	   #mle
-
+	library(stats4)
 
 #############################################################
 ########################## FENETRE D'OBSERVATION ############
 #############################################################
 
-t_end=20000  # max(T1deathdate)=18092
+t_end=18092  # max(T1deathdate)=18092
 
 #############################################################
 ########################## INITIATION #######################
@@ -30,13 +30,13 @@ caracteristique_clone=NULL
 caracteristique_seller=NULL
 
 caracteristique_seller=age_at_viager
-caracteristique_seller=c(caracteristique_seller,T1sex-1)   # pour ajouter des caracteristiques
+caracteristique_seller=c(caracteristique_seller,-T1sex+2)   # pour ajouter des caracteristiques
 
 carac_seller=matrix(caracteristique_seller,ncol=n_seller)
 
 caracteristique_clone=(dayoflifemean-delta_age_clone)/365
 #caracteristique_clone=Ind_Region_birth
-caracteristique_clone=c(caracteristique_clone,T1sex-1)
+caracteristique_clone=c(caracteristique_clone,-T1sex+2)
 
 carac_clone=matrix(caracteristique_clone,ncol=n_clone)
 
@@ -137,7 +137,7 @@ log_like=function (alpha, steps, beta,resi_,carac_,contrat_)
 {
 	Psi1 = function(d)
 	{	
-		print(d)
+		#print(d)
 		ind=c(ind1(d),ind2(d),ind3(d),ind4(d))
 		
 		res=t(ind)%*%steps
@@ -250,7 +250,7 @@ return (res)
   beta_c=c(param[8],param[9])
 	alpha=param[1]
 	res=log_like(alpha,step_s,beta_s,resi_s,caracteristique_s,contrat)+ log_like(alpha,step_c,  beta_c, resi_c, caracteristique_c, contrat)
-
+#print(res)
 return (res)
 }
 
@@ -259,37 +259,37 @@ return (res)
 ##############################################################
 
 	init=init0
-	papatry = try(mle(Vminuslike,start=list(alpha=init[1],beta1_s=init[2],beta2_s=init[3],step1_s=init[4],step2_s=init[5],step3_s=init[6],step4_s=init[7],beta1_c=init[8],beta2_c=init[9],step1_c=init[10],step2_c=init[11],step3_c=init[12],step4_c=init[13]),method="BFGS"),silent = T)
-	
-
-	nbessais = 0
-	nbessais_max = 1
-	
-	while( (class(papatry)=="try-error") & (nbessais <=nbessais_max) ){
-
-		init[1] = init[1] + ((-1)^(nbessais))*0.1*(nbessais/3)
-		init[2] = init[2] + ((-1)^(nbessais))*0.05*(nbessais)
-		init[3] = init[3] + ((-1)^(nbessais))* 0.2*(nbessais/3)
-		init[4] = init[4] + ((-1)^(nbessais))*0.1*(nbessais/3)
-		init[5] = init[5] + ((-1)^(nbessais))*0.05*(nbessais)
-		init[6] = init[6] + ((-1)^(nbessais))* 0.2*(nbessais/3)
-		init[7] = init[7] + ((-1)^(nbessais))*0.1*(nbessais/3)
-		init[8] = init[8] + ((-1)^(nbessais))*0.05*(nbessais)
-		init[9] = init[9] + ((-1)^(nbessais))* 0.2*(nbessais/3)
-		init[10] = init[10] + ((-1)^(nbessais))*0.1*(nbessais/3)
-		init[11] = init[11] + ((-1)^(nbessais))*0.05*(nbessais)
-		init[12] = init[12] + ((-1)^(nbessais))* 0.2*(nbessais/3)
-		init[13] = init[13] + ((-1)^(nbessais))* 0.2*(nbessais/3)
-
-	print(nbessais)
-		papatry = try(mle(Vminuslike,start=list(alpha=init[1],beta1_s=init[2],beta2_s=init[3],step1_s=init[4],step2_s=init[5],step3_s=init[6],step4_s=init[7],beta1_c=init[8],beta2_c=init[9],step1_c=init[10],step2_c=init[11],step3_c=init[12],step4_c=init[13]),method="BFGS"),silent = T)
-		nbessais = nbessais+1
-	
-	}
-
-      papa=mle(Vminuslike,start=list(alpha=init[1],beta1_s=init[2],beta2_s=init[3],step1_s=init[4],step2_s=init[5],step3_s=init[6],step4_s=init[7],beta1_c=init[8],beta2_c=init[9],step1_c=init[10],step2_c=init[11],step3_c=init[12],step4_c=init[13]))  #,method="BFGS"
-	
-summary(papa)
+#	papatry = try(mle(Vminuslike,start=list(alpha=init[1],beta1_s=init[2],beta2_s=init[3],step1_s=init[4],step2_s=init[5],step3_s=init[6],step4_s=init[7],beta1_c=init[8],beta2_c=init[9],step1_c=init[10],step2_c=init[11],step3_c=init[12],step4_c=init[13]),method="BFGS"),silent = T)
+#	
+#
+#	nbessais = 0
+#	nbessais_max = 1
+#	
+#	while( (class(papatry)=="try-error") & (nbessais <=nbessais_max) ){
+#
+#		init[1] = init[1] + ((-1)^(nbessais))*0.1*(nbessais/3)
+#		init[2] = init[2] + ((-1)^(nbessais))*0.05*(nbessais)
+#		init[3] = init[3] + ((-1)^(nbessais))* 0.2*(nbessais/3)
+#		init[4] = init[4] + ((-1)^(nbessais))*0.1*(nbessais/3)
+#		init[5] = init[5] + ((-1)^(nbessais))*0.05*(nbessais)
+#		init[6] = init[6] + ((-1)^(nbessais))* 0.2*(nbessais/3)
+#		init[7] = init[7] + ((-1)^(nbessais))*0.1*(nbessais/3)
+#		init[8] = init[8] + ((-1)^(nbessais))*0.05*(nbessais)
+#		init[9] = init[9] + ((-1)^(nbessais))* 0.2*(nbessais/3)
+#		init[10] = init[10] + ((-1)^(nbessais))*0.1*(nbessais/3)
+#		init[11] = init[11] + ((-1)^(nbessais))*0.05*(nbessais)
+#		init[12] = init[12] + ((-1)^(nbessais))* 0.2*(nbessais/3)
+#		init[13] = init[13] + ((-1)^(nbessais))* 0.2*(nbessais/3)
+#
+#	print(nbessais)
+#		papatry = try(mle(Vminuslike,start=list(alpha=init[1],beta1_s=init[2],beta2_s=init[3],step1_s=init[4],step2_s=init[5],step3_s=init[6],step4_s=init[7],beta1_c=init[8],beta2_c=init[9],step1_c=init[10],step2_c=init[11],step3_c=init[12],step4_c=init[13]),method="BFGS"),silent = T)
+#		nbessais = nbessais+1
+#	
+#	}
+#
+ #     papa=mle(Vminuslike,start=list(alpha=init[1],beta1_s=init[2],beta2_s=init[3],step1_s=init[4],step2_s=init[5],step3_s=init[6],step4_s=init[7],beta1_c=init[8],beta2_c=init[9],step1_c=init[10],step2_c=init[11],step3_c=init[12],step4_c=init[13]))  #,method="BFGS"
+#	
+#summary(papa)
 maxl = maxLik(loglike , start = c(alpha=init[1],beta1_s=init[2],beta2_s=init[3],step1_s=init[4],step2_s=init[5],step3_s=init[6],step4_s=init[7],beta1_c=init[8],beta2_c=init[9],step1_c=init[10],step2_c=init[11],step3_c=init[12],step4_c=init[13]),method="NM")
 summary(maxl)
 
@@ -300,7 +300,7 @@ summary(maxl)
 ##############################################
 
 
-nbupdate = 3
+nbupdate = 5
 while ((nbupdate>0) ){
   
 init[1] = maxl$estimate[[1]]
@@ -318,10 +318,12 @@ init[12] = maxl$estimate[[12]]
 init[13] = maxl$estimate[[13]]
 	maxl = maxLik(loglike , start = c(alpha=init[1],beta1_s=init[2],beta2_s=init[3],step1_s=init[4],step2_s=init[5],step3_s=init[6],step4_s=init[7],beta1_c=init[8],beta2_c=init[9],step1_c=init[10],step2_c=init[11],step3_c=init[12],step4_c=init[13]),method="NM")
 
-print(nbupdate)
-summary(maxl)
+print(c("etape",50-nbupdate))
+print(summary(maxl))
 nbupdate = nbupdate -1
 }
+maxl = maxLik(loglike , start = c(alpha=init[1],beta1_s=init[2],beta2_s=init[3],step1_s=init[4],step2_s=init[5],step3_s=init[6],step4_s=init[7],beta1_c=init[8],beta2_c=init[9],step1_c=init[10],step2_c=init[11],step3_c=init[12],step4_c=init[13]),method="BFGS")
+
 
 summary(maxl)
 
