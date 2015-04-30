@@ -325,3 +325,5 @@ ttest>rejet
 [1] 0 0 0 0 0 0
 
 AIC = 19809.58
+Longueur resi_clean_tot = 1108
+BIC =  19869.7
