@@ -108,3 +108,6 @@ pval :
 Légende : !!!=!!! indique rejet égalité
 
 AIC = 19151.65 
+
+Longueur resi_clean_tot = 1108
+BIC = 19181.71
